@@ -334,4 +334,21 @@ public class StudentAttendanceService {
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
 
+	/**
+	 * @author 布村沙英 -Task.25
+	 * @return [未入力日が0より大きい場合]:true,そうでない場合はfalseを戻す。
+	 */
+	public Boolean notEnterCheck() {
+		//今日の日付を取得
+		Date trainingDate = attendanceUtil.getTrainingDate();
+		final int NO_DATA = 0;
+		//[未入力日が0より大きい場合]:true,そうでない場合はfalseを戻す。
+		if (NO_DATA < tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), (short) 0, trainingDate)) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
 }

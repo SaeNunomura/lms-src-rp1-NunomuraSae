@@ -65,4 +65,13 @@ public interface TStudentAttendanceMapper {
 	 */
 	Boolean update(TStudentAttendance tStudentAttendance);
 
+	/**
+	 * @author 布村沙英 -Task.25
+	 * @param lmsUserId ログイン中のLMSユーザID
+	 * @param deleteFlg 削除フラグ
+	 * @param trainingDate 本日の日付
+	 * @return 勤怠の未入力件数
+	 */
+	Integer notEnterCount(Integer lmsUserId, Short deleteFlg, Date trainingDate);
+
 }
