@@ -90,12 +90,11 @@
 		}
 
 		<!--		布村沙英 -Task.25-->
-		const hasNotEnterCheck = /*[[${notEnterCheck}]]*/ false;
-		window.addEventListener('DOMContentLoaded', function () {
-			if (hasNotEnterCheck) {
+		window.onload = function () {
+			if (/*[[${notEnterCheck}]]*/ false) {
 				alert("過去日の勤怠に未入力があります。");
 			}
-		});
+		};
 	</script>
 
 </body>
