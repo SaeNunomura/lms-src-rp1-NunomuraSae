@@ -342,9 +342,8 @@ public class StudentAttendanceService {
 		//今日の日付を取得
 		Date trainingDate = attendanceUtil.getTrainingDate();
 		final int NO_DATA = 0;
-		final short DELETE_FLG = 0;
 		//[未入力日が0より大きい場合]:true,そうでない場合はfalseを戻す。
-		if (NO_DATA < tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), (short) DELETE_FLG, trainingDate)) {
+		if (NO_DATA < tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), Constants.DB_FLG_FALSE, trainingDate)) {
 			return true;
 		} else {
 			return false;
