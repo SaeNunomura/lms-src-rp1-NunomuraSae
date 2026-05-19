@@ -182,14 +182,14 @@ public class AttendanceUtil {
 	 */
 	public Integer getStartHour(String startTime) {
 		if (startTime == null || startTime.length() < 2) {
-	        return null;
-	    }
+			return null;
+		}
 
-	    try {
-	        return Integer.parseInt(startTime.substring(0, 2));
-	    } catch (NumberFormatException e) {
-	        return null; 
-	    }
+		try {
+			return Integer.parseInt(startTime.substring(0, 2));
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -199,14 +199,14 @@ public class AttendanceUtil {
 	 */
 	public Integer getStartMin(String startTime) {
 		if (startTime == null || startTime.length() < 4) {
-	        return null; 
-	    }
+			return null;
+		}
 
-	    try {
-	        return Integer.parseInt(startTime.substring(2, 4));
-	    } catch (NumberFormatException e) {
-	        return null;
-	    }
+		try {
+			return Integer.parseInt(startTime.substring(2, 4));
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -216,14 +216,14 @@ public class AttendanceUtil {
 	 */
 	public Integer getEndHour(String endTime) {
 		if (endTime == null || endTime.length() < 2) {
-	        return null; 
-	    }
+			return null;
+		}
 
-	    try {
-	        return Integer.parseInt(endTime.substring(0, 2));
-	    } catch (NumberFormatException e) {
-	        return null; 
-	    }
+		try {
+			return Integer.parseInt(endTime.substring(0, 2));
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -233,14 +233,14 @@ public class AttendanceUtil {
 	 */
 	public Integer getEndMin(String endTime) {
 		if (endTime == null || endTime.length() < 4) {
-	        return null; 
-	    }
+			return null;
+		}
 
-	    try {
-	        return Integer.parseInt(endTime.substring(2, 4));
-	    } catch (NumberFormatException e) {
-	        return null; 
-	    }
+		try {
+			return Integer.parseInt(endTime.substring(2, 4));
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 }

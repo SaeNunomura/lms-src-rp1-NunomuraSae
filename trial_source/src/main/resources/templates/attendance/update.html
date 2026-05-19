@@ -29,8 +29,10 @@
 							<th class="w140">日付</th>
 							<th class="w300">コース内容</th>
 							<th class="w70">出勤</th>
+							<!-- 布村沙英 -Task.26-->
 							<th class="w70"></th>
 							<th class="w70">退勤</th>
+							<!-- 布村沙英 -Task.26-->
 							<th class="w70"></th>
 							<th class="w80">中抜け時間</th>
 							<th class="w70">ステータス</th>
@@ -57,7 +59,7 @@
 								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
 								<td class="w70">
-
+									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeHour|"
 										class="form-control">
 										<option th:each="trainingStartHour : ${attendanceForm.trainingStartHourMap}"
@@ -67,7 +69,7 @@
 									</select>
 								</td>
 								<td class="w70">
-
+									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeMin|"
 										class="form-control">
 										<option th:each="trainingStartMin : ${attendanceForm.trainingStartMinMap}"
@@ -76,10 +78,8 @@
 											[[${trainingStartMin.value}]]</option>
 									</select>
 								</td>
-
-
 								<td class="w70">
-
+									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeHour|"
 										class="form-control">
 										<option th:each="trainingEndHour : ${attendanceForm.trainingEndHourMap}"
@@ -89,7 +89,7 @@
 									</select>
 								</td>
 								<td class="w70">
-
+									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeMin|"
 										class="form-control">
 										<option th:each="trainingEndMin : ${attendanceForm.trainingEndMinMap}"
@@ -98,8 +98,6 @@
 											[[${trainingEndMin.value}]]</option>
 									</select>
 								</td>
-
-
 								<td class="w80">
 									<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control">
 										<option th:each="blankTime : ${attendanceForm.blankTimes}"

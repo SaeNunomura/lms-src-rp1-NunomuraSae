@@ -219,13 +219,13 @@ public class StudentAttendanceService {
 		attendanceForm.setUserName(loginUserDto.getUserName());
 		attendanceForm.setLeaveFlg(loginUserDto.getLeaveFlg());
 		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
-		//出勤時間(時間)選択肢用の時間マップを取得
+		//出勤時間(時間)選択肢用の時間マップを取得 布村沙英 -Task.26
 		attendanceForm.setTrainingStartHourMap(attendanceUtil.getHourMap());
-		//出勤時間(分)選択肢用の時間マップを取得
+		//出勤時間(分)選択肢用の時間マップを取得 布村沙英 -Task.26
 		attendanceForm.setTrainingStartMinMap(attendanceUtil.getMinMap());
-		//退勤時間(時間)選択肢用の分マップを取得
+		//退勤時間(時間)選択肢用の分マップを取得 布村沙英 -Task.26
 		attendanceForm.setTrainingEndHourMap(attendanceUtil.getHourMap());
-		//退勤時間(分)選択肢用の分マップを取得
+		//退勤時間(分)選択肢用の分マップを取得 布村沙英 -Task.26
 		attendanceForm.setTrainingEndMinMap(attendanceUtil.getMinMap());
 
 		// 途中退校している場合のみ設定
@@ -253,11 +253,11 @@ public class StudentAttendanceService {
 						attendanceUtil.calcBlankTime(attendanceManagementDto.getBlankTime())));
 			}
 
-			//出勤時刻を「時」「分」に分割してセットし、表示用の日付文字列を生成してセットする。
+			//出勤時刻を「時」「分」に分割してセットし、表示用の日付文字列を生成してセットする 布村沙英 -Task.26
 			String startTime = attendanceManagementDto.getTrainingStartTime();
 			dailyAttendanceForm.setTrainingStartTimeHour(attendanceUtil.getStartHour(startTime));
 			dailyAttendanceForm.setTrainingStartTimeMin(attendanceUtil.getStartMin(startTime));
-			//退勤時刻を「時」「分」に分割してセットし、表示用の日付文字列を生成してセットする
+			//退勤時刻を「時」「分」に分割してセットし、表示用の日付文字列を生成してセットする 布村沙英 -Task.26
 			String endTime = attendanceManagementDto.getTrainingEndTime();
 			dailyAttendanceForm.setTrainingEndTimeHour(attendanceUtil.getEndHour(endTime));
 			dailyAttendanceForm.setTrainingEndTimeMin(attendanceUtil.getEndMin(endTime));
@@ -312,29 +312,30 @@ public class StudentAttendanceService {
 			}
 			tStudentAttendance.setLmsUserId(lmsUserId);
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
-			// 出勤時刻整形
-			TrainingTime trainingStartTime = null;
+			// 出勤時刻整形 布村沙英 -Task.26
 			Integer trainingStartTimeHour = dailyAttendanceForm.getTrainingStartTimeHour();
 			Integer trainingStartTimeMin = dailyAttendanceForm.getTrainingStartTimeMin();
-			//出勤時刻がnullのレコードはスキップする
-			if(trainingStartTimeHour == null && trainingStartTimeMin == null) {
+			//出勤時刻がnullのレコードはスキップする 布村沙英 -Task.26
+			if (trainingStartTimeHour == null && trainingStartTimeMin == null) {
 				continue;
 			}
-			//フォーム内の「時」と「分」の入力を、「hh:mm」形式の文字列に変換してセットする。
-			if(trainingStartTimeHour != null && trainingStartTimeMin !=null) {
-				trainingStartTime = new TrainingTime(String.format("%02d:%02d", trainingStartTimeHour, trainingStartTimeMin));
+			//フォーム内の「時」と「分」の入力を、「hh:mm」形式の文字列に変換してセットする 布村沙英 -Task.26
+			TrainingTime trainingStartTime = null;
+			if (trainingStartTimeHour != null && trainingStartTimeMin != null) {
+				trainingStartTime = new TrainingTime(
+						String.format("%02d:%02d", trainingStartTimeHour, trainingStartTimeMin));
 			}
 			tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
-			// 退勤時刻整形
-			TrainingTime trainingEndTime = null;
+			// 退勤時刻整形 布村沙英 -Task.26
 			Integer trainingEndTimeHour = dailyAttendanceForm.getTrainingEndTimeHour();
 			Integer trainingEndTimeMin = dailyAttendanceForm.getTrainingEndTimeMin();
-			//退勤時刻がnullのレコードはスキップする
-			if(trainingEndTimeHour == null && trainingEndTimeMin == null) {
+			//退勤時刻がnullのレコードはスキップする 布村沙英 -Task.26
+			if (trainingEndTimeHour == null && trainingEndTimeMin == null) {
 				continue;
 			}
-			//フォーム内の「時」と「分」の入力を、「hh:mm」形式の文字列に変換してセットする。
-			if(trainingEndTimeHour != null && trainingEndTimeMin !=null) {
+			//フォーム内の「時」と「分」の入力を、「hh:mm」形式の文字列に変換してセットする。-Task.26
+			TrainingTime trainingEndTime = null;
+			if (trainingEndTimeHour != null && trainingEndTimeMin != null) {
 				trainingEndTime = new TrainingTime(String.format("%02d:%02d", trainingEndTimeHour, trainingEndTimeMin));
 			}
 			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
