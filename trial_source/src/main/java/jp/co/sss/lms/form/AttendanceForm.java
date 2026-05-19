@@ -31,5 +31,13 @@ public class AttendanceForm {
 	private LinkedHashMap<Integer, String> blankTimes;
 	/** 日次の勤怠フォームリスト */
 	private List<DailyAttendanceForm> attendanceList;
+	/** 出勤時間(時間)(プルダウン) */
+	private LinkedHashMap<Integer, String> trainingStartHourMap;
+	/** 出勤時間(分)(プルダウン) */
+	private LinkedHashMap<Integer, String> trainingStartMinMap;
+	/** 退勤時間(時間)(プルダウン) */
+	private LinkedHashMap<Integer, String> trainingEndHourMap;
+	/** 退勤時間(分)(プルダウン) */
+	private LinkedHashMap<Integer, String> trainingEndMinMap;
 
 }

@@ -219,6 +219,14 @@ public class StudentAttendanceService {
 		attendanceForm.setUserName(loginUserDto.getUserName());
 		attendanceForm.setLeaveFlg(loginUserDto.getLeaveFlg());
 		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
+		//出勤時間(時間)選択肢用の時間マップを取得
+		attendanceForm.setTrainingStartHourMap(attendanceUtil.getHourMap());
+		//出勤時間(分)選択肢用の時間マップを取得
+		attendanceForm.setTrainingStartMinMap(attendanceUtil.getMinMap());
+		//退勤時間(時間)選択肢用の分マップを取得
+		attendanceForm.setTrainingEndHourMap(attendanceUtil.getHourMap());
+		//退勤時間(分)選択肢用の分マップを取得
+		attendanceForm.setTrainingEndMinMap(attendanceUtil.getMinMap());
 
 		// 途中退校している場合のみ設定
 		if (loginUserDto.getLeaveDate() != null) {
@@ -237,12 +245,23 @@ public class StudentAttendanceService {
 					.setTrainingDate(dateUtil.toString(attendanceManagementDto.getTrainingDate()));
 			dailyAttendanceForm
 					.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
+
 			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
 			if (attendanceManagementDto.getBlankTime() != null) {
 				dailyAttendanceForm.setBlankTime(attendanceManagementDto.getBlankTime());
 				dailyAttendanceForm.setBlankTimeValue(String.valueOf(
 						attendanceUtil.calcBlankTime(attendanceManagementDto.getBlankTime())));
 			}
+
+			//出勤時刻を「時」「分」に分割してセットし、表示用の日付文字列を生成してセットする。
+			String startTime = attendanceManagementDto.getTrainingStartTime();
+			dailyAttendanceForm.setTrainingStartTimeHour(attendanceUtil.getStartHour(startTime));
+			dailyAttendanceForm.setTrainingStartTimeMin(attendanceUtil.getStartMin(startTime));
+			//退勤時刻を「時」「分」に分割してセットし、表示用の日付文字列を生成してセットする
+			String endTime = attendanceManagementDto.getTrainingEndTime();
+			dailyAttendanceForm.setTrainingEndTimeHour(attendanceUtil.getEndHour(endTime));
+			dailyAttendanceForm.setTrainingEndTimeMin(attendanceUtil.getEndMin(endTime));
+
 			dailyAttendanceForm.setStatus(String.valueOf(attendanceManagementDto.getStatus()));
 			dailyAttendanceForm.setNote(attendanceManagementDto.getNote());
 			dailyAttendanceForm.setSectionName(attendanceManagementDto.getSectionName());
@@ -295,11 +314,29 @@ public class StudentAttendanceService {
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
 			// 出勤時刻整形
 			TrainingTime trainingStartTime = null;
-			trainingStartTime = new TrainingTime(dailyAttendanceForm.getTrainingStartTime());
+			Integer trainingStartTimeHour = dailyAttendanceForm.getTrainingStartTimeHour();
+			Integer trainingStartTimeMin = dailyAttendanceForm.getTrainingStartTimeMin();
+			//出勤時刻がnullのレコードはスキップする
+			if(trainingStartTimeHour == null && trainingStartTimeMin == null) {
+				continue;
+			}
+			//フォーム内の「時」と「分」の入力を、「hh:mm」形式の文字列に変換してセットする。
+			if(trainingStartTimeHour != null && trainingStartTimeMin !=null) {
+				trainingStartTime = new TrainingTime(String.format("%02d:%02d", trainingStartTimeHour, trainingStartTimeMin));
+			}
 			tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
 			// 退勤時刻整形
 			TrainingTime trainingEndTime = null;
-			trainingEndTime = new TrainingTime(dailyAttendanceForm.getTrainingEndTime());
+			Integer trainingEndTimeHour = dailyAttendanceForm.getTrainingEndTimeHour();
+			Integer trainingEndTimeMin = dailyAttendanceForm.getTrainingEndTimeMin();
+			//退勤時刻がnullのレコードはスキップする
+			if(trainingEndTimeHour == null && trainingEndTimeMin == null) {
+				continue;
+			}
+			//フォーム内の「時」と「分」の入力を、「hh:mm」形式の文字列に変換してセットする。
+			if(trainingEndTimeHour != null && trainingEndTimeMin !=null) {
+				trainingEndTime = new TrainingTime(String.format("%02d:%02d", trainingEndTimeHour, trainingEndTimeMin));
+			}
 			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
 			// 中抜け時間
 			tStudentAttendance.setBlankTime(dailyAttendanceForm.getBlankTime());
@@ -343,7 +380,8 @@ public class StudentAttendanceService {
 		Date trainingDate = attendanceUtil.getTrainingDate();
 		final int NO_DATA = 0;
 		//[未入力日が0より大きい場合]:true,そうでない場合はfalseを戻す。
-		if (NO_DATA < tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), Constants.DB_FLG_FALSE, trainingDate)) {
+		if (NO_DATA < tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), Constants.DB_FLG_FALSE,
+				trainingDate)) {
 			return true;
 		} else {
 			return false;

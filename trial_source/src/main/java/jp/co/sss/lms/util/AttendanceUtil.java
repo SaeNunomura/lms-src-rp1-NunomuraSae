@@ -147,4 +147,100 @@ public class AttendanceUtil {
 		return false;
 	}
 
+	/**
+	 * @author 布村沙英 -Task.26
+	 * @return 選択肢用の時間マップを取得
+	 */
+	public LinkedHashMap<Integer, String> getHourMap() {
+		LinkedHashMap<Integer, String> hourMap = new LinkedHashMap<>();
+		//時間セレクトボックスの中身を取得
+		hourMap.put(null, "");
+		for (int i = 0; i < 24; i++) {
+			hourMap.put(i, String.format("%02d", i));
+		}
+		return hourMap;
+	}
+
+	/**
+	 * @author 布村沙英 -Task.26
+	 * @return 選択肢用の分マップを取得
+	 */
+	public LinkedHashMap<Integer, String> getMinMap() {
+		LinkedHashMap<Integer, String> minMap = new LinkedHashMap<>();
+		//分セレクトボックスの中身を取得
+		minMap.put(null, "");
+		for (int i = 0; i < 60; i++) {
+			minMap.put(i, String.format("%02d", i));
+		}
+		return minMap;
+	}
+
+	/**
+	 * @author 布村沙英 -Task.26
+	 * @param startTime 出勤時間(hh:mm)
+	 * @return 出勤時間の時間を取得
+	 */
+	public Integer getStartHour(String startTime) {
+		if (startTime == null || startTime.length() < 2) {
+	        return null;
+	    }
+
+	    try {
+	        return Integer.parseInt(startTime.substring(0, 2));
+	    } catch (NumberFormatException e) {
+	        return null; 
+	    }
+	}
+
+	/**
+	* @author 布村沙英 -Task.26
+	 * @param startTime 出勤時間(hh:mm)
+	 * @return 出勤時間の分を取得
+	 */
+	public Integer getStartMin(String startTime) {
+		if (startTime == null || startTime.length() < 4) {
+	        return null; 
+	    }
+
+	    try {
+	        return Integer.parseInt(startTime.substring(2, 4));
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }
+	}
+
+	/**
+	 * @author 布村沙英 -Task.26
+	 * @param endTime 退勤時間(hh:mm)
+	 * @return 退勤時間の時間を取得
+	 */
+	public Integer getEndHour(String endTime) {
+		if (endTime == null || endTime.length() < 2) {
+	        return null; 
+	    }
+
+	    try {
+	        return Integer.parseInt(endTime.substring(0, 2));
+	    } catch (NumberFormatException e) {
+	        return null; 
+	    }
+	}
+
+	/**
+	 * @author 布村沙英 -Task.26
+	 * @param endTime 退勤時間(hh:mm)
+	 * @return 退勤時間の分を取得
+	 */
+	public Integer getEndMin(String endTime) {
+		if (endTime == null || endTime.length() < 4) {
+	        return null; 
+	    }
+
+	    try {
+	        return Integer.parseInt(endTime.substring(2, 4));
+	    } catch (NumberFormatException e) {
+	        return null; 
+	    }
+	}
+
 }
