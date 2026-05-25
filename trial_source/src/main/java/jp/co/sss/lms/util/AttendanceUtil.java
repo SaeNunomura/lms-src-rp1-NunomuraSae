@@ -203,7 +203,7 @@ public class AttendanceUtil {
 		}
 
 		try {
-			return Integer.parseInt(startTime.substring(2, 4));
+			return Integer.parseInt(startTime.substring(3, 5));
 		} catch (NumberFormatException e) {
 			return null;
 		}
@@ -237,7 +237,7 @@ public class AttendanceUtil {
 		}
 
 		try {
-			return Integer.parseInt(endTime.substring(2, 4));
+			return Integer.parseInt(endTime.substring(3, 5));
 		} catch (NumberFormatException e) {
 			return null;
 		}

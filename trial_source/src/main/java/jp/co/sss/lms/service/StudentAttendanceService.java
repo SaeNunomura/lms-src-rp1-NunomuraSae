@@ -315,30 +315,27 @@ public class StudentAttendanceService {
 			// 出勤時刻整形 布村沙英 -Task.26
 			Integer trainingStartTimeHour = dailyAttendanceForm.getTrainingStartTimeHour();
 			Integer trainingStartTimeMin = dailyAttendanceForm.getTrainingStartTimeMin();
-			//出勤時刻がnullのレコードはスキップする 布村沙英 -Task.26
-			if (trainingStartTimeHour == null && trainingStartTimeMin == null) {
-				continue;
-			}
-			//フォーム内の「時」と「分」の入力を、「hh:mm」形式の文字列に変換してセットする 布村沙英 -Task.26
 			TrainingTime trainingStartTime = null;
-			if (trainingStartTimeHour != null && trainingStartTimeMin != null) {
+			// 過去日に未入力があった場合はNULLをsetする
+			if (trainingStartTimeHour == null || trainingStartTimeMin == null) {
+				tStudentAttendance.setTrainingStartTime(null);
+			} else {
 				trainingStartTime = new TrainingTime(
 						String.format("%02d:%02d", trainingStartTimeHour, trainingStartTimeMin));
+				tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
 			}
-			tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
 			// 退勤時刻整形 布村沙英 -Task.26
 			Integer trainingEndTimeHour = dailyAttendanceForm.getTrainingEndTimeHour();
 			Integer trainingEndTimeMin = dailyAttendanceForm.getTrainingEndTimeMin();
-			//退勤時刻がnullのレコードはスキップする 布村沙英 -Task.26
-			if (trainingEndTimeHour == null && trainingEndTimeMin == null) {
-				continue;
-			}
-			//フォーム内の「時」と「分」の入力を、「hh:mm」形式の文字列に変換してセットする。-Task.26
 			TrainingTime trainingEndTime = null;
-			if (trainingEndTimeHour != null && trainingEndTimeMin != null) {
-				trainingEndTime = new TrainingTime(String.format("%02d:%02d", trainingEndTimeHour, trainingEndTimeMin));
+			// 過去日に未入力があった場合はNULLをsetする
+			if (trainingEndTimeHour == null || trainingEndTimeMin == null) {
+				tStudentAttendance.setTrainingEndTime(null);
+			} else {
+				trainingEndTime = new TrainingTime(
+						String.format("%02d:%02d", trainingEndTimeHour, trainingEndTimeMin));
+				tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
 			}
-			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
 			// 中抜け時間
 			tStudentAttendance.setBlankTime(dailyAttendanceForm.getBlankTime());
 			// 遅刻早退ステータス
