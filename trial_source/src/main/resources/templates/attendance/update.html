@@ -18,7 +18,7 @@
 			<h2><small>途中退校日：${dispLeaveDate}</small></h2>
 		</th:block>
 	</th:block>
-
+	
 	<div class="row">
 		<div class="bs-component col-sm-12">
 
@@ -124,12 +124,25 @@
 					<th:block th:if="${session.loginUserDto.role != '0001'}">
 						<input type="submit" value="戻る" name="indexCompany" class="btn btn-default" />
 					</th:block>
-					<input type="submit" value="更新" name="complete" class="btn btn-info" />
+					<input type="submit" value="更新" name="complete" class="btn btn-info" onclick="return registCheck();" />
 				</div>
 
 			</form>
 		</div>
 	</div>
+
+
+	<script>
+		function registCheck() {
+			if (confirm("更新します。よろしいですか？")) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	</script>
+
 
 </body>
 

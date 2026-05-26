@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
@@ -312,33 +313,16 @@ public class StudentAttendanceService {
 			}
 			tStudentAttendance.setLmsUserId(lmsUserId);
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
-			// 出勤時刻整形 布村沙英 -Task.26
-			Integer trainingStartTimeHour = dailyAttendanceForm.getTrainingStartTimeHour();
-			Integer trainingStartTimeMin = dailyAttendanceForm.getTrainingStartTimeMin();
-			TrainingTime trainingStartTime = null;
-			// 過去日に未入力があった場合はNULLをsetする
-			if (trainingStartTimeHour == null || trainingStartTimeMin == null) {
-				tStudentAttendance.setTrainingStartTime(null);
-			} else {
-				trainingStartTime = new TrainingTime(
-						String.format("%02d:%02d", trainingStartTimeHour, trainingStartTimeMin));
-				tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
-			}
-			// 退勤時刻整形 布村沙英 -Task.26
-			Integer trainingEndTimeHour = dailyAttendanceForm.getTrainingEndTimeHour();
-			Integer trainingEndTimeMin = dailyAttendanceForm.getTrainingEndTimeMin();
-			TrainingTime trainingEndTime = null;
-			// 過去日に未入力があった場合はNULLをsetする
-			if (trainingEndTimeHour == null || trainingEndTimeMin == null) {
-				tStudentAttendance.setTrainingEndTime(null);
-			} else {
-				trainingEndTime = new TrainingTime(
-						String.format("%02d:%02d", trainingEndTimeHour, trainingEndTimeMin));
-				tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
-			}
+			// 出勤時間(整形済み) 布村沙英 -Task.26
+			tStudentAttendance.setTrainingStartTime(dailyAttendanceForm.getTrainingStartTime());
+			// 退勤時間(整形済み) 布村沙英 -Task.26
+			tStudentAttendance.setTrainingEndTime(dailyAttendanceForm.getTrainingEndTime());
 			// 中抜け時間
 			tStudentAttendance.setBlankTime(dailyAttendanceForm.getBlankTime());
 			// 遅刻早退ステータス
+			TrainingTime trainingStartTime = new TrainingTime(dailyAttendanceForm.getTrainingStartTime());
+			TrainingTime trainingEndTime = new TrainingTime(dailyAttendanceForm.getTrainingEndTime());
+			;
 			if ((trainingStartTime != null || trainingEndTime != null)
 					&& !dailyAttendanceForm.getStatusDispName().equals("欠席")) {
 				AttendanceStatusEnum attendanceStatusEnum = attendanceUtil
@@ -383,6 +367,50 @@ public class StudentAttendanceService {
 			return true;
 		} else {
 			return false;
+		}
+
+	}
+
+	/**
+	 * 出退勤時間(時・分)をhh:mmに整形
+	 * @author 布村沙英 -Task.26
+	 * @param attendanceForm
+	 */
+	public void formatConversion(AttendanceForm attendanceForm) {
+
+		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
+			// 出勤時刻整形 布村沙英 -Task.26
+			Integer trainingStartTimeHour = dailyAttendanceForm.getTrainingStartTimeHour();
+			Integer trainingStartTimeMin = dailyAttendanceForm.getTrainingStartTimeMin();
+			TrainingTime trainingStartTime = null;
+			// 過去日に未入力があった場合はNULLをsetする 布村沙英 -Task.26
+			if (trainingStartTimeHour == null || trainingStartTimeMin == null) {
+				dailyAttendanceForm.setTrainingStartTime(null);
+			} else {
+				trainingStartTime = new TrainingTime(
+						String.format("%02d:%02d", trainingStartTimeHour, trainingStartTimeMin));
+				dailyAttendanceForm.setTrainingStartTime(trainingStartTime.getFormattedString());
+			}
+			// 退勤時刻整形 布村沙英 -Task.26
+			Integer trainingEndTimeHour = dailyAttendanceForm.getTrainingEndTimeHour();
+			Integer trainingEndTimeMin = dailyAttendanceForm.getTrainingEndTimeMin();
+			TrainingTime trainingEndTime = null;
+			// 過去日に未入力があった場合はNULLをsetする
+			if (trainingEndTimeHour == null || trainingEndTimeMin == null) {
+				dailyAttendanceForm.setTrainingEndTime(null);
+			} else {
+				trainingEndTime = new TrainingTime(
+						String.format("%02d:%02d", trainingEndTimeHour, trainingEndTimeMin));
+				dailyAttendanceForm.setTrainingEndTime(trainingEndTime.getFormattedString());
+			}
+		}
+
+	}
+
+	public void updateInputCheck(AttendanceForm attendanceForm, BindingResult result) {
+		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
+
+			
 		}
 
 	}
