@@ -8,8 +8,13 @@
 
 <body>
 
-	<th:block th:if="${session.loginUserDto.role == '0001'}">
+	<th:block th:if="${session.loginUserDto.role == '0001'}" th:object="${attendanceForm}">
 		<h2>勤怠管理</h2>
+		<p th:each="dailyAttendanceForm, stat : ${attendanceForm.attendanceList}">
+			<span th:errors="*{attendanceList[__${stat.index}__].note}" class="help-inline error"></span>
+			<span th:errors="*{attendanceList[__${stat.index}__].trainingStartTime}" class="help-inline error"></span>
+			<span th:errors="*{attendanceList[__${stat.index}__].trainingEndTime}" class="help-inline error"></span>
+		</p>
 	</th:block>
 
 	<th:block th:if="${session.loginUserDto.role != '0001'}">
@@ -18,7 +23,7 @@
 			<h2><small>途中退校日：${dispLeaveDate}</small></h2>
 		</th:block>
 	</th:block>
-	
+
 	<div class="row">
 		<div class="bs-component col-sm-12">
 
@@ -124,7 +129,8 @@
 					<th:block th:if="${session.loginUserDto.role != '0001'}">
 						<input type="submit" value="戻る" name="indexCompany" class="btn btn-default" />
 					</th:block>
-					<input type="submit" value="更新" name="complete" class="btn btn-info" onclick="return registCheck();" />
+					<input type="submit" value="更新" name="complete" class="btn btn-info"
+						onclick="return registCheck();" />
 				</div>
 
 			</form>

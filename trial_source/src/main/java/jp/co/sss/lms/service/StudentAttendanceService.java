@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
@@ -407,12 +408,48 @@ public class StudentAttendanceService {
 
 	}
 
+
+
+	/**
+	 * 入力チェック
+	 * @author 布村沙英 -Task.27
+	 * @param attendanceForm
+	 * @param result
+	 */
 	public void updateInputCheck(AttendanceForm attendanceForm, BindingResult result) {
-		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
 
+		for (int i = 0; i < attendanceForm.getAttendanceList().size(); i++) {
+			DailyAttendanceForm dailyAttendanceForm = attendanceForm.getAttendanceList().get(i);
 			
+			final int MAX_LENGTH = 100;
+			if (dailyAttendanceForm.getNote() != null && dailyAttendanceForm.getNote().length() > MAX_LENGTH) {
+				final String REMARKS = "備考";
+				final String ONEHUNDRED = "100";
+				String fieldName = String.format("attendanceList[%d].note", i);
+				result.addError(new FieldError(
+						result.getObjectName(),
+						fieldName,
+						messageUtil.getMessage("maxlength", new String[] { REMARKS, ONEHUNDRED })));
+			}
+			
+			if(dailyAttendanceForm.getTrainingStartTimeHour() == null ^ dailyAttendanceForm.getTrainingStartTimeMin() == null) {
+				final String START_TIME = "出勤時間";
+				String fieldName = String.format("attendanceList[%d].trainingStartTime", i);
+				result.addError(new FieldError(
+						result.getObjectName(),
+						fieldName,
+						messageUtil.getMessage("input.invalid", new String[] { START_TIME })));
+			}
+			
+			if(dailyAttendanceForm.getTrainingEndTimeHour() == null ^ dailyAttendanceForm.getTrainingEndTimeMin() == null) {
+				final String END_TIME = "退勤時間";
+				String fieldName = String.format("attendanceList[%d].trainingEndTime", i);
+				result.addError(new FieldError(
+						result.getObjectName(),
+						fieldName,
+						messageUtil.getMessage("input.invalid", new String[] { END_TIME })));
+			}
 		}
-
 	}
 
 }
