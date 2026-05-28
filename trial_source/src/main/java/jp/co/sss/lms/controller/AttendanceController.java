@@ -15,6 +15,7 @@ import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.form.AttendanceForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
+import jp.co.sss.lms.util.AttendanceUtil;
 import jp.co.sss.lms.util.Constants;
 
 /**
@@ -30,6 +31,8 @@ public class AttendanceController {
 	private StudentAttendanceService studentAttendanceService;
 	@Autowired
 	private LoginUserDto loginUserDto;
+	@Autowired
+	private AttendanceUtil attendanceUtil;
 
 	/**
 	 * 勤怠管理画面 初期表示
@@ -137,8 +140,20 @@ public class AttendanceController {
 	public String complete(@ModelAttribute AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
 
+		//入力チェック 布村沙英 -Task.27
 		studentAttendanceService.updateInputCheck(attendanceForm, result);
+		//エラーが起きた場合、マップを取得し勤怠情報直接入力画面に遷移 布村沙英 -Task.27
 		if(result.hasErrors()) {
+			//中抜け時間の選択肢用マップを取得
+			attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
+			//出勤時間(時間)選択肢用の時間マップを取得 布村沙英 -Task.26
+			attendanceForm.setTrainingStartHourMap(attendanceUtil.getHourMap());
+			//出勤時間(分)選択肢用の時間マップを取得 布村沙英 -Task.26
+			attendanceForm.setTrainingStartMinMap(attendanceUtil.getMinMap());
+			//退勤時間(時間)選択肢用の分マップを取得 布村沙英 -Task.26
+			attendanceForm.setTrainingEndHourMap(attendanceUtil.getHourMap());
+			//退勤時間(分)選択肢用の分マップを取得 布村沙英 -Task.26
+			attendanceForm.setTrainingEndMinMap(attendanceUtil.getMinMap());
 			return "attendance/update";
 		}
 		// 更新

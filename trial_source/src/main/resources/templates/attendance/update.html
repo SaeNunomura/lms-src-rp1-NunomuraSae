@@ -11,9 +11,17 @@
 	<th:block th:if="${session.loginUserDto.role == '0001'}" th:object="${attendanceForm}">
 		<h2>勤怠管理</h2>
 		<p th:each="dailyAttendanceForm, stat : ${attendanceForm.attendanceList}">
+			<!-- 布村沙英 -Task.27-->
 			<span th:errors="*{attendanceList[__${stat.index}__].note}" class="help-inline error"></span>
+			<span th:errors="*{attendanceList[__${stat.index}__].trainingStartTimeHour}"
+				class="help-inline error"></span>
+			<span th:errors="*{attendanceList[__${stat.index}__].trainingStartTimeMin}"
+				class="help-inline error"></span>
+			<span th:errors="*{attendanceList[__${stat.index}__].trainingEndTimeHour}" class="help-inline error"></span>
+			<span th:errors="*{attendanceList[__${stat.index}__].trainingEndTimeMin}" class="help-inline error"></span>
 			<span th:errors="*{attendanceList[__${stat.index}__].trainingStartTime}" class="help-inline error"></span>
 			<span th:errors="*{attendanceList[__${stat.index}__].trainingEndTime}" class="help-inline error"></span>
+			<span th:errors="*{attendanceList[__${stat.index}__].blankTime}" class="help-inline error"></span>
 		</p>
 	</th:block>
 
@@ -27,7 +35,7 @@
 	<div class="row">
 		<div class="bs-component col-sm-12">
 
-			<form th:action="@{/attendance/update}" method="post">
+			<form th:action="@{/attendance/update}" method="post" th:object="${attendanceForm}">
 				<table class="table table-hover dataTable no-footer">
 					<thead>
 						<tr>
@@ -43,7 +51,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<th:block th:each="dailyAttendanceForm, stat : *{attendanceForm.attendanceList}">
+						<th:block th:each="dailyAttendanceForm, stat : *{attendanceList}">
 							<tr>
 								<th:block>
 									<input type="hidden" th:name="|attendanceList[${stat.index}].isToday|"
@@ -65,7 +73,10 @@
 								<td class="w70">
 									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeHour|"
-										class="form-control">
+										class="form-control" th:classappend="${
+            							#fields.hasErrors('attendanceList[' + stat.index + '].trainingStartTimeHour')
+            							or
+           								 #fields.hasErrors('attendanceList[' + stat.index + '].trainingStartTime') } ? ' errorInput'">
 										<option th:each="trainingStartHour : ${attendanceForm.trainingStartHourMap}"
 											th:value="${trainingStartHour.key}" th:inline="text" class="form-control"
 											th:selected="${trainingStartHour.key == dailyAttendanceForm.trainingStartTimeHour}">
@@ -76,7 +87,10 @@
 								<td class="w70">
 									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeMin|"
-										class="form-control">
+										class="form-control" th:classappend="${
+            							#fields.hasErrors('attendanceList[' + stat.index + '].trainingStartTimeMin')
+            							or
+           								 #fields.hasErrors('attendanceList[' + stat.index + '].trainingStartTime') } ? ' errorInput'">
 										<option th:each="trainingStartMin : ${attendanceForm.trainingStartMinMap}"
 											th:value="${trainingStartMin.key}" th:inline="text" class="form-control"
 											th:selected="${trainingStartMin.key == dailyAttendanceForm.trainingStartTimeMin}">
@@ -86,7 +100,10 @@
 								<td class="w70">
 									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeHour|"
-										class="form-control">
+										class="form-control" th:classappend="${
+            							#fields.hasErrors('attendanceList[' + stat.index + '].trainingEndTimeHour')
+            							or
+           								 #fields.hasErrors('attendanceList[' + stat.index + '].trainingEndTime') } ? ' errorInput'">
 										<option th:each="trainingEndHour : ${attendanceForm.trainingEndHourMap}"
 											th:value="${trainingEndHour.key}" th:inline="text" class="form-control"
 											th:selected="${trainingEndHour.key == dailyAttendanceForm.trainingEndTimeHour}">
@@ -97,7 +114,10 @@
 								<td class="w70">
 									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeMin|"
-										class="form-control">
+										class="form-control" th:classappend="${
+            							#fields.hasErrors('attendanceList[' + stat.index + '].trainingEndTimeMin')
+            							or
+           								 #fields.hasErrors('attendanceList[' + stat.index + '].trainingEndTime') } ? ' errorInput'">
 										<option th:each="trainingEndMin : ${attendanceForm.trainingEndMinMap}"
 											th:value="${trainingEndMin.key}" th:inline="text" class="form-control"
 											th:selected="${trainingEndMin.key == dailyAttendanceForm.trainingEndTimeMin}">
@@ -105,7 +125,8 @@
 									</select>
 								</td>
 								<td class="w80">
-									<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control">
+									<select th:name="|attendanceList[${stat.index}].blankTime|" class="form-control"
+										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].blankTime')} ? ' errorInput'">
 										<option th:each="blankTime : ${attendanceForm.blankTimes}"
 											th:value="${blankTime.key}" th:inline="text" class="form-control"
 											th:selected="${blankTime.key == dailyAttendanceForm.blankTime}">
@@ -115,7 +136,8 @@
 								<td class="w70">[[${dailyAttendanceForm.statusDispName}]]</td>
 								<td class="w140">
 									<input type="text" th:name="|attendanceList[${stat.index}].note|"
-										th:value="${dailyAttendanceForm.note}" class="form-control"></input>
+										th:value="${dailyAttendanceForm.note}" class="form-control"
+										th:classappend="${#fields.hasErrors('attendanceList[' + stat.index + '].note')} ? ' errorInput'"></input>
 								</td>
 							</tr>
 						</th:block>
