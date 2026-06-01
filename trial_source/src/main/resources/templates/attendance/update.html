@@ -69,11 +69,12 @@
 								</th:block>
 								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
 								<td class="w140">[[${dailyAttendanceForm.sectionName}]]</td>
-								<td class="w60"><input type="button" class="btn btn-success" value="定時" /></td>
+								<td class="w60"><input type="button" class="btn btn-success"
+										th:id="|regular-${stat.index}|" value="定時" /></td>
 								<td class="w70">
 									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeHour|"
-										class="form-control" th:classappend="${
+										class="form-control" th:id="|start-time-hour-${stat.index}|" th:classappend="${
             							#fields.hasErrors('attendanceList[' + stat.index + '].trainingStartTimeHour')
             							or
            								 #fields.hasErrors('attendanceList[' + stat.index + '].trainingStartTime') } ? ' errorInput'">
@@ -87,7 +88,7 @@
 								<td class="w70">
 									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeMin|"
-										class="form-control" th:classappend="${
+										class="form-control" th:id="|start-time-min-${stat.index}|" th:classappend="${
             							#fields.hasErrors('attendanceList[' + stat.index + '].trainingStartTimeMin')
             							or
            								 #fields.hasErrors('attendanceList[' + stat.index + '].trainingStartTime') } ? ' errorInput'">
@@ -100,7 +101,7 @@
 								<td class="w70">
 									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeHour|"
-										class="form-control" th:classappend="${
+										class="form-control" th:id="|end-time-hour-${stat.index}|" th:classappend="${
             							#fields.hasErrors('attendanceList[' + stat.index + '].trainingEndTimeHour')
             							or
            								 #fields.hasErrors('attendanceList[' + stat.index + '].trainingEndTime') } ? ' errorInput'">
@@ -114,7 +115,7 @@
 								<td class="w70">
 									<!-- 布村沙英 -Task.26-->
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeMin|"
-										class="form-control" th:classappend="${
+										class="form-control" th:id="|end-time-min-${stat.index}|" th:classappend="${
             							#fields.hasErrors('attendanceList[' + stat.index + '].trainingEndTimeMin')
             							or
            								 #fields.hasErrors('attendanceList[' + stat.index + '].trainingEndTime') } ? ' errorInput'">
@@ -169,6 +170,23 @@
 				return false;
 			}
 		}
+	</script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			const buttons = document.querySelectorAll("[id^='regular-']");
+
+			buttons.forEach(btn => {
+				btn.addEventListener("click", () => {
+					const index = btn.id.split("-")[1];
+
+					document.getElementById(`start-time-hour-${index}`).value = "9";
+					document.getElementById(`start-time-min-${index}`).value = "0";
+					document.getElementById(`end-time-hour-${index}`).value = "18";
+					document.getElementById(`end-time-min-${index}`).value = "0";
+				});
+			});
+		});
 	</script>
 
 
