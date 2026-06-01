@@ -172,14 +172,19 @@
 		}
 	</script>
 
+	<!-- 布村沙英 -Task.28-->
 	<script>
+		//HTMLが読み込まれたタイミングで実行
 		document.addEventListener("DOMContentLoaded", () => {
+			//「regular-」から始まるidを取得し、定数buttonsに格納(全行の定時ボタンを取得)
 			const buttons = document.querySelectorAll("[id^='regular-']");
-
+			//buttonsに格納された要素を一つずつ取り出しbtnに格納(それぞれの行の定時ボタンを取得)
 			buttons.forEach(btn => {
+				//btnがclickされた時に{}内の処理を実行
 				btn.addEventListener("click", () => {
+					//定時ボタンのid属性名を「-」で区切って配列化、その後1番目の要素を定数indexに格納
 					const index = btn.id.split("-")[1];
-
+					//定時ボタンが押下された行のそれぞれのセレクトボックスをindexから特定、値を入れる
 					document.getElementById(`start-time-hour-${index}`).value = "9";
 					document.getElementById(`start-time-min-${index}`).value = "0";
 					document.getElementById(`end-time-hour-${index}`).value = "18";
