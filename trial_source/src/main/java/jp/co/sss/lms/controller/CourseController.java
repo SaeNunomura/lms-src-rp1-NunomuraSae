@@ -48,5 +48,10 @@ public class CourseController {
 
 		return "course/detail";
 	}
+	
+	@RequestMapping(path = "/list")
+	public String list() {
+		return "course/list";
+	}
 
 }

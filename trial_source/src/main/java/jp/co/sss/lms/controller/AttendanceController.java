@@ -167,5 +167,10 @@ public class AttendanceController {
 
 		return "attendance/detail";
 	}
+	
+	@RequestMapping(path = "list")
+	public String list() {
+		return "attendance/list";
+	}
 
 }
