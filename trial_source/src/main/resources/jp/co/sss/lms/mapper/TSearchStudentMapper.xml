@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.sss.lms.mapper.TSearchStudentMapper">
+
+	<select id="getCouseList"
+		resultType="jp.co.sss.lms.dto.CourseDto">
+		SELECT course_id, course_name
+		FROM m_course
+		WHERE hidden_flg
+		= #{hiddenFlg}
+		AND delete_flg = #{deleteFlg}
+		ORDER BY course_id ASC;
+	</select>
+
+	<select id="getPlaceList"
+		resultType="jp.co.sss.lms.dto.PlaceDto">
+		SELECT place_id, place_name
+		FROM m_place 
+		WHERE place_id = #{placeId}
+		AND delete_flg = #{deleteFlg}
+	</select>
+
+	<select id="getCompanyList" resultType="jp.co.sss.lms.dto.CompanyDto">
+		SELECT company_id, company_name 
+		FROM m_company 
+		WHERE delete_flg = #{deleteFlg} 
+		ORDER BY company_id ASC;
+	</select>
+
+	<select id="getSearchStudentList"
+		resultType="jp.co.sss.lms.dto.SearchStudentDTO">
+		SELECT
+		l.lms_user_id,
+		u.user_id,
+		u.user_name,
+		c.course_id,
+		c.course_name,
+		comp.company_name,
+		p.place_name From m_lms_user l
+		INNER JOIN m_user u
+		ON
+		l.user_id = u.user_id AND u.delete_flg = #{deleteFlg}
+		LEFT OUTER JOIN
+		t_user_company us
+		ON l.lms_user_id = us.lms_user_id AND us.delete_flg =
+		#{deleteFlg}
+		LEFT OUTER JOIN m_company comp
+		ON us.company_id =
+		comp.company_id AND comp.delete_flg = #{deleteFlg}
+		LEFT OUTER JOIN
+		t_course_user cu
+		ON l.lms_user_id = cu.lms_user_id AND cu.delete_flg =
+		#{deleteFlg}
+		LEFT OUTER JOIN m_course c
+		ON cu.course_id = c.course_id
+		AND c.delete_flg = #{deleteFlg}
+		LEFT OUTER JOIN t_user_place up
+		ON
+		l.lms_user_id = up.lms_user_id AND up.delete_flg = #{deleteFlg}
+		LEFT
+		OUTER JOIN m_place p
+		ON up.place_id = p.place_id AND p.delete_flg =
+		#{deleteFlg}
+		WHERE
+		l.delete_flg = #{deleteFlg}
+		<if test="courseId != null">
+			AND c.course_id = #{courseId}
+		</if>
+		<if test="companyId != null">
+			AND comp.company_id = #{companyId}
+		</if>
+		<if test="userName != null and userName = ''">
+			AND u.user_name LIKE '%' || #{userName} || '%'
+		</if>
+		<if test="placeId != null">
+			AND p.place_id = #{placeId}
+		</if>
+		<if test="role != null">
+			AND l.role = #{role}
+		</if>
+
+	</select>
+</mapper>

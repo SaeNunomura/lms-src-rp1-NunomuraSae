@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.form.AttendanceForm;
+import jp.co.sss.lms.form.SearchStudentForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.AttendanceUtil;
 import jp.co.sss.lms.util.Constants;
@@ -169,7 +170,9 @@ public class AttendanceController {
 	}
 	
 	@RequestMapping(path = "list")
-	public String list() {
+	public String list(Model model) {
+		SearchStudentForm searchStudentForm = studentAttendanceService.getSearchStudentForm(loginUserDto.getPlaceId());
+		model.addAttribute("searchStudentForm", searchStudentForm);
 		return "attendance/list";
 	}
 

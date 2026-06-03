@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Component
 @Data
-public class SearchStudentDTO {
+public class SearchStudentDto {
 
 	/**LMSユーザーID */
 	private Integer lmsUserId;

@@ -3,10 +3,14 @@ package jp.co.sss.lms.util;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import jp.co.sss.lms.dto.CompanyDto;
+import jp.co.sss.lms.dto.CourseDto;
+import jp.co.sss.lms.dto.PlaceDto;
 import jp.co.sss.lms.enums.AttendanceStatusEnum;
 import jp.co.sss.lms.mapper.MSectionMapper;
 
@@ -241,6 +245,38 @@ public class AttendanceUtil {
 		} catch (NumberFormatException e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * コース名のセレクトリスト作成
+	 * @param courseList
+	 * @return セレクトリスト用のマップを取得
+	 */
+	public LinkedHashMap<Integer, String> getCourseMap(List<CourseDto> courseList) {
+		LinkedHashMap<Integer, String> courseMap = new LinkedHashMap<Integer, String>();
+		courseMap.put(null, "");
+		for(CourseDto courseDto : courseList) {
+			courseMap.put(courseDto.getCourseId(), courseDto.getCourseName());
+		}
+		return courseMap;
+	}
+	
+	public LinkedHashMap<Integer, String> getPlaceMap(List<PlaceDto> placeList) {
+		LinkedHashMap<Integer, String> placeMap = new LinkedHashMap<Integer, String>();
+		placeMap.put(null, "");
+		for(PlaceDto placeDto : placeList) {
+			placeMap.put(placeDto.getPlaceId(), placeDto.getPlaceName());
+		}
+		return placeMap;
+	}
+	
+	public LinkedHashMap<Integer, String> getCompanyMap(List<CompanyDto> companyList) {
+		LinkedHashMap<Integer, String> companyMap = new LinkedHashMap<Integer, String>();
+		companyMap.put(null, "");
+		for(CompanyDto companyDto : companyList) {
+			companyMap.put(companyDto.getCompanyId(), companyDto.getCompanyName());
+		}
+		return companyMap;
 	}
 
 }

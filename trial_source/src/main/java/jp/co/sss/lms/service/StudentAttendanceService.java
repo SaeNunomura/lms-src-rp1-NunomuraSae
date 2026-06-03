@@ -3,6 +3,7 @@ package jp.co.sss.lms.service;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -12,11 +13,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
+import jp.co.sss.lms.dto.CompanyDto;
+import jp.co.sss.lms.dto.CourseDto;
 import jp.co.sss.lms.dto.LoginUserDto;
+import jp.co.sss.lms.dto.PlaceDto;
 import jp.co.sss.lms.entity.TStudentAttendance;
 import jp.co.sss.lms.enums.AttendanceStatusEnum;
 import jp.co.sss.lms.form.AttendanceForm;
 import jp.co.sss.lms.form.DailyAttendanceForm;
+import jp.co.sss.lms.form.SearchStudentForm;
+import jp.co.sss.lms.mapper.TSearchStudentMapper;
 import jp.co.sss.lms.mapper.TStudentAttendanceMapper;
 import jp.co.sss.lms.util.AttendanceUtil;
 import jp.co.sss.lms.util.Constants;
@@ -45,6 +51,8 @@ public class StudentAttendanceService {
 	private LoginUserDto loginUserDto;
 	@Autowired
 	private TStudentAttendanceMapper tStudentAttendanceMapper;
+	@Autowired
+	private TSearchStudentMapper tSearchStudentMapper;
 
 	/**
 	 * 勤怠一覧情報取得
@@ -526,6 +534,25 @@ public class StudentAttendanceService {
 						messageUtil.getMessage("attendance.blankTimeError")));
 			}
 		}
+	}
+
+	public SearchStudentForm getSearchStudentForm(Integer placeId) {
+		List<CourseDto> courseList = tSearchStudentMapper.getCouseList(Constants.DB_HIDDEN_FLG_FALSE,
+				Constants.DB_FLG_FALSE);
+		LinkedHashMap<Integer, String> courseMap = attendanceUtil.getCourseMap(courseList);
+		
+		List<PlaceDto> placeList = tSearchStudentMapper.getPlaceList(placeId, Constants.DB_FLG_FALSE);
+		LinkedHashMap<Integer, String> placeMap = attendanceUtil.getPlaceMap(placeList);
+		
+		List<CompanyDto> companyList = tSearchStudentMapper.getCompanyList(Constants.DB_FLG_FALSE);
+		LinkedHashMap<Integer, String> companyMap = attendanceUtil.getCompanyMap(companyList);
+		
+		SearchStudentForm searchStudentForm = new SearchStudentForm();
+		searchStudentForm.setCourseMap(courseMap);
+		searchStudentForm.setPlaceMap(placeMap);
+		searchStudentForm.setCompanyMap(companyMap);
+		
+		return searchStudentForm;
 	}
 
 }
