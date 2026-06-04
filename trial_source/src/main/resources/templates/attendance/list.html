@@ -15,6 +15,7 @@
 	<script type="text/javascript" src="../../static/js/bootstrap.min.js"></script>
 </head>
 <!--布村沙英 -Task.57-->
+
 <body>
 	<div id="wrap">
 
@@ -122,8 +123,8 @@
 										</tr>
 									</thead>
 									<tbody>
-										<th:block th:each="searchStudentDto : ${searchStudentDtoList}">
-											<tr role="row" class="odd">
+										<th:block th:each="searchStudentDto, stat : ${searchStudentDtoList}">
+											<tr role="row" class="odd" th:classappend="${searchStudentNotEnterCheckList[stat.index]} ? 'search-student-not-enter-check'">
 												<td class="sorting_1" th:text="${searchStudentDto.lmsUserId}"></td>
 												<td th:text="${searchStudentDto.userName}"></td>
 												<td th:text="${searchStudentDto.courseName}"></td>
@@ -148,9 +149,8 @@
 															value="勤怠確認" class="btn btn-default">
 													</form>
 												</td>
+											</tr>
 										</th:block>
-
-										</tr>
 									</tbody>
 								</table>
 							</div>

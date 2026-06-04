@@ -199,6 +199,9 @@ public class AttendanceController {
 		//送信されたフォームを元に受講生検索メソッドを実行、検索結果をリストに格納
 		List<SearchStudentDto> searchStudentDtoList = studentAttendanceService.searchStudent(searchStudentForm);
 		model.addAttribute("searchStudentDtoList", searchStudentDtoList);
+		//検索結果の受講生ごとの過去日勤怠未入力チェック
+		List<Boolean> searchStudentNotEnterCheckList = studentAttendanceService.searchStudentNotEnterCheck(searchStudentDtoList);
+		model.addAttribute("searchStudentNotEnterCheckList", searchStudentNotEnterCheckList);
 		//ログインしている者の会場IDを元に、受講生検索フォームを取得
 		model.addAttribute("searchStudentForm",
 				studentAttendanceService.getSearchStudentForm(loginUserDto.getPlaceId()));

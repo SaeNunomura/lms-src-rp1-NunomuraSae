@@ -2,6 +2,7 @@ package jp.co.sss.lms.service;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -570,16 +571,43 @@ public class StudentAttendanceService {
 	 * @return 検索結果DTOリスト
 	 */
 	public List<SearchStudentDto> searchStudent(SearchStudentForm searchStudentForm) {
-		//フォームに入力された値を元に受講生を検索、結果をDTOリストに格納
 		List<SearchStudentDto> searchStudentDtoList = new ArrayList<SearchStudentDto>();
-		if(searchStudentForm.getCourseId() == 0 && searchStudentForm.getCompanyId() == 0 && searchStudentForm.getUserName() == "") {
-			searchStudentDtoList = null;
-			return searchStudentDtoList;
+		//コース名・企業名・ユーザー名に何も入れず検索した場合は空の検索結果を返す
+		if (searchStudentForm.getCourseId() == 0 && searchStudentForm.getCompanyId() == 0
+				&& searchStudentForm.getUserName().isEmpty()) {
+			return Collections.emptyList();
 		}
+		//フォームに入力された値を元に受講生を検索、結果をDTOリストに格納
 		searchStudentDtoList = tSearchStudentMapper.getSearchStudentList(searchStudentForm.getCourseId(),
 				searchStudentForm.getCompanyId(), searchStudentForm.getUserName(), searchStudentForm.getPlaceId(),
 				Constants.CODE_VAL_ROLL_STUDENT, Constants.DB_FLG_FALSE);
 		return searchStudentDtoList;
+	}
+
+	/**
+	 * 検索結果の受講生ごとに過去日勤怠未入力チェックを行う
+	 * @author 布村沙英 -Task.57
+	 * @param searchStudentDtoList
+	 * @return 未入力チェックリスト
+	 */
+	public List<Boolean> searchStudentNotEnterCheck(List<SearchStudentDto> searchStudentDtoList) {
+		List<Boolean> searchStudentNotEnterList = new ArrayList<Boolean>();
+		//今日の日付を取得
+		Date trainingDate = attendanceUtil.getTrainingDate();
+		final int NO_DATA = 0;
+		//検索結果が0件の場合は空のリストを返す
+		if (searchStudentDtoList == null || searchStudentDtoList.isEmpty()) {
+			return Collections.emptyList();
+		}
+		//検索結果の受講生に過去日勤怠未入力があればtrue、そうでなければfalseをリストに加える
+		for (int i = 0; i < searchStudentDtoList.size(); i++) {
+			//[未入力日が0より大きい場合]:true,そうでない場合はfalseをリストに加える
+			searchStudentNotEnterList
+					.add(NO_DATA < tStudentAttendanceMapper.notEnterCount(searchStudentDtoList.get(i).getLmsUserId(),
+							Constants.DB_FLG_FALSE,
+							trainingDate));
+		}
+		return searchStudentNotEnterList;
 	}
 
 }

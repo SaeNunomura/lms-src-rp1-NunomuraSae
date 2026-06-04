@@ -23,6 +23,10 @@ div.contract {
 	border-color: red;
 }
 
+.search-student-not-enter-check{
+	background-color: #FFD2D2;
+}
+
 .warnInput {
 	background-color: #FFFFA2;
 }
