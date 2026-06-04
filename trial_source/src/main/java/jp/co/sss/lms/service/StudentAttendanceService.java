@@ -17,6 +17,7 @@ import jp.co.sss.lms.dto.CompanyDto;
 import jp.co.sss.lms.dto.CourseDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.dto.PlaceDto;
+import jp.co.sss.lms.dto.SearchStudentDto;
 import jp.co.sss.lms.entity.TStudentAttendance;
 import jp.co.sss.lms.enums.AttendanceStatusEnum;
 import jp.co.sss.lms.form.AttendanceForm;
@@ -536,23 +537,45 @@ public class StudentAttendanceService {
 		}
 	}
 
+	/**
+	 * 受講生検索フォーム取得
+	 * @author 布村沙英 -Task.57
+	 * @param placeId
+	 * @return 受講生検索フォーム
+	 */
 	public SearchStudentForm getSearchStudentForm(Integer placeId) {
+		//コース一覧からセレクトリスト用マップを取得
 		List<CourseDto> courseList = tSearchStudentMapper.getCouseList(Constants.DB_HIDDEN_FLG_FALSE,
 				Constants.DB_FLG_FALSE);
 		LinkedHashMap<Integer, String> courseMap = attendanceUtil.getCourseMap(courseList);
-		
+		//会場一覧からセレクトリスト用マップを取得
 		List<PlaceDto> placeList = tSearchStudentMapper.getPlaceList(placeId, Constants.DB_FLG_FALSE);
 		LinkedHashMap<Integer, String> placeMap = attendanceUtil.getPlaceMap(placeList);
-		
+		//企業一覧からセレクトリスト用マップを取得
 		List<CompanyDto> companyList = tSearchStudentMapper.getCompanyList(Constants.DB_FLG_FALSE);
 		LinkedHashMap<Integer, String> companyMap = attendanceUtil.getCompanyMap(companyList);
-		
+		//各マップをフォームクラスに格納
 		SearchStudentForm searchStudentForm = new SearchStudentForm();
 		searchStudentForm.setCourseMap(courseMap);
 		searchStudentForm.setPlaceMap(placeMap);
 		searchStudentForm.setCompanyMap(companyMap);
-		
+
 		return searchStudentForm;
+	}
+
+	/**
+	 *  受講生検索結果を取得
+	 * @author 布村沙英 -Task.57
+	 * @param searchStudentForm
+	 * @return 検索結果DTOリスト
+	 */
+	public List<SearchStudentDto> searchStudent(SearchStudentForm searchStudentForm) {
+		//フォームに入力された値を元に受講生を検索、結果をDTOリストに格納
+		List<SearchStudentDto> searchStudentDtoList = new ArrayList<SearchStudentDto>();
+		searchStudentDtoList = tSearchStudentMapper.getSearchStudentList(searchStudentForm.getCourseId(),
+				searchStudentForm.getCompanyId(), searchStudentForm.getUserName(), searchStudentForm.getPlaceId(),
+				Constants.CODE_VAL_ROLL_STUDENT, Constants.DB_FLG_FALSE);
+		return searchStudentDtoList;
 	}
 
 }

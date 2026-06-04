@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.co.sss.lms.mapper.TSearchStudentMapper">
-
+<!--布村沙英 -Task.57-->
 	<select id="getCouseList"
 		resultType="jp.co.sss.lms.dto.CourseDto">
 		SELECT course_id, course_name
@@ -29,7 +29,7 @@
 	</select>
 
 	<select id="getSearchStudentList"
-		resultType="jp.co.sss.lms.dto.SearchStudentDTO">
+		resultType="jp.co.sss.lms.dto.SearchStudentDto">
 		SELECT
 		l.lms_user_id,
 		u.user_id,
@@ -37,10 +37,10 @@
 		c.course_id,
 		c.course_name,
 		comp.company_name,
-		p.place_name From m_lms_user l
+		p.place_name 
+		From m_lms_user l
 		INNER JOIN m_user u
-		ON
-		l.user_id = u.user_id AND u.delete_flg = #{deleteFlg}
+		ON l.user_id = u.user_id AND u.delete_flg = #{deleteFlg}
 		LEFT OUTER JOIN
 		t_user_company us
 		ON l.lms_user_id = us.lms_user_id AND us.delete_flg =

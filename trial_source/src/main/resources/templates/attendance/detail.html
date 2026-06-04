@@ -26,7 +26,32 @@
 			<li><span th:text="'*' + '&nbsp' + ${error}" class="help-inline error"></span></li>
 		</ul>
 	</th:block>
+	
+	<th:block th:if="${session.loginUserDto.role == '0002'}" th:object="${searchStudentForm}">
+	<h3>受講生情報</h3>
+          <table class="table table-hover wh">
+            <tbody>
+              <tr>
+                <th>ユーザー名</th>
+                <td th:text="*{userName}"></td>
+              </tr>
+              <tr>
+                <th>企業名</th>
+                <td th:text="*{companyName}"></td>
+              </tr>
+              <tr>
+                <th>コース名</th>
+                <td th:text="*{courseName}"></td>
+              </tr>
+              <tr>
+                <th>会場名</th>
+                <td th:text="*{placeName}"><small>（$$）</small></td>
+              </tr>
+            </tbody>
+          </table>
 
+          <h3>勤怠情報</h3>
+</th:block>
 	<th:block th:if="${session.loginUserDto.role == '0001'}">
 		<div class="well well-lg p10 mb10">
 			<div class="form-group">

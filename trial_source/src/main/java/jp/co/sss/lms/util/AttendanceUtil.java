@@ -249,6 +249,7 @@ public class AttendanceUtil {
 	
 	/**
 	 * コース名のセレクトリスト作成
+	 * @author 布村沙英 -Task.57
 	 * @param courseList
 	 * @return セレクトリスト用のマップを取得
 	 */
@@ -260,16 +261,25 @@ public class AttendanceUtil {
 		}
 		return courseMap;
 	}
-	
+	/**
+	 * 会場名のセレクトリスト作成
+	 * @author 布村沙英 -Task.57
+	 * @param placeList
+	 * @return セレクトリスト用のマップを取得
+	 */
 	public LinkedHashMap<Integer, String> getPlaceMap(List<PlaceDto> placeList) {
 		LinkedHashMap<Integer, String> placeMap = new LinkedHashMap<Integer, String>();
-		placeMap.put(null, "");
 		for(PlaceDto placeDto : placeList) {
 			placeMap.put(placeDto.getPlaceId(), placeDto.getPlaceName());
 		}
 		return placeMap;
 	}
-	
+	/**
+	 * 企業名のセレクトリスト作成
+	 * @author 布村沙英 -Task.57
+	 * @param companyList
+	 * @return セレクトリスト用のマップを取得
+	 */
 	public LinkedHashMap<Integer, String> getCompanyMap(List<CompanyDto> companyList) {
 		LinkedHashMap<Integer, String> companyMap = new LinkedHashMap<Integer, String>();
 		companyMap.put(null, "");

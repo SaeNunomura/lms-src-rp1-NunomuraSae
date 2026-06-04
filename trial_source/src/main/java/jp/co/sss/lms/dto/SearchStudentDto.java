@@ -17,7 +17,7 @@ public class SearchStudentDto {
 	private Integer lmsUserId;
 	/**ユーザーID */
 	private Integer userId;
-	/**ユーザーネ名*/
+	/**ユーザー名*/
 	private String userName;
 	/**コースID */
 	private Integer courseId;

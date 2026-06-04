@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
+import jp.co.sss.lms.dto.SearchStudentDto;
 import jp.co.sss.lms.form.AttendanceForm;
 import jp.co.sss.lms.form.SearchStudentForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
@@ -144,7 +145,7 @@ public class AttendanceController {
 		//入力チェック 布村沙英 -Task.27
 		studentAttendanceService.updateInputCheck(attendanceForm, result);
 		//エラーが起きた場合、マップを取得し勤怠情報直接入力画面に遷移 布村沙英 -Task.27
-		if(result.hasErrors()) {
+		if (result.hasErrors()) {
 			//中抜け時間の選択肢用マップを取得
 			attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
 			//出勤時間(時間)選択肢用の時間マップを取得 布村沙英 -Task.26
@@ -168,12 +169,58 @@ public class AttendanceController {
 
 		return "attendance/detail";
 	}
-	
+
+	/**
+	 * 
+	 * 「研修管理」→「勤怠確認」押下
+	 * 
+	 * @author 布村沙英 -Task.57
+	 * @param model
+	 * @return 勤怠情報確認（受講生一覧）
+	 */
 	@RequestMapping(path = "list")
 	public String list(Model model) {
+		//ログインしている者の会場IDを元に、受講生検索フォームを取得
 		SearchStudentForm searchStudentForm = studentAttendanceService.getSearchStudentForm(loginUserDto.getPlaceId());
 		model.addAttribute("searchStudentForm", searchStudentForm);
 		return "attendance/list";
+	}
+
+	/**
+	 * 勤怠情報確認（受講生一覧）画面『検索』ボタン押下
+	 * 
+	 * @author 布村沙英
+	 * @param searchStudentForm
+	 * @param model
+	 * @return 勤怠情報確認（受講生一覧）
+	 */
+	@RequestMapping(path = "list", params = "search")
+	public String search(SearchStudentForm searchStudentForm, Model model) {
+		//送信されたフォームを元に受講生検索メソッドを実行、検索結果をリストに格納
+		List<SearchStudentDto> searchStudentDtoList = studentAttendanceService.searchStudent(searchStudentForm);
+		model.addAttribute("searchStudentDtoList", searchStudentDtoList);
+		//ログインしている者の会場IDを元に、受講生検索フォームを取得
+		model.addAttribute("searchStudentForm",
+				studentAttendanceService.getSearchStudentForm(loginUserDto.getPlaceId()));
+		return "attendance/list";
+	}
+
+	/**
+	 * 勤怠情報確認（受講生一覧）『勤怠確認』ボタン押下
+	 * 
+	 * @author 布村沙英 -Task.57
+	 * @param searchStudentForm
+	 * @param model
+	 * @return 勤怠管理画面
+	 */
+	@RequestMapping(path = "detail", params = "attendance_updateActionForm", method = RequestMethod.POST)
+	public String attendanceUpdateActionForm(SearchStudentForm searchStudentForm, Model model) {
+		// 勤怠一覧の取得
+		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
+				.getAttendanceManagement(searchStudentForm.getCourseId(), searchStudentForm.getLmsUserId());
+		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+		model.addAttribute("searchStudentForm", searchStudentForm);
+		return "attendance/detail";
 	}
 
 }
