@@ -255,7 +255,7 @@ public class AttendanceUtil {
 	 */
 	public LinkedHashMap<Integer, String> getCourseMap(List<CourseDto> courseList) {
 		LinkedHashMap<Integer, String> courseMap = new LinkedHashMap<Integer, String>();
-		courseMap.put(null, "");
+		courseMap.put(０, "");
 		for(CourseDto courseDto : courseList) {
 			courseMap.put(courseDto.getCourseId(), courseDto.getCourseName());
 		}
@@ -282,7 +282,7 @@ public class AttendanceUtil {
 	 */
 	public LinkedHashMap<Integer, String> getCompanyMap(List<CompanyDto> companyList) {
 		LinkedHashMap<Integer, String> companyMap = new LinkedHashMap<Integer, String>();
-		companyMap.put(null, "");
+		companyMap.put(0, "");
 		for(CompanyDto companyDto : companyList) {
 			companyMap.put(companyDto.getCompanyId(), companyDto.getCompanyName());
 		}

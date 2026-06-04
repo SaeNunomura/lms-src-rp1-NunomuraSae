@@ -64,10 +64,10 @@
 		#{deleteFlg}
 		WHERE
 		l.delete_flg = #{deleteFlg}
-		<if test="courseId != null">
+		<if test="courseId != 0">
 			AND c.course_id = #{courseId}
 		</if>
-		<if test="companyId != null">
+		<if test="companyId != 0">
 			AND comp.company_id = #{companyId}
 		</if>
 		<if test="userName != null and userName = ''">

@@ -572,6 +572,10 @@ public class StudentAttendanceService {
 	public List<SearchStudentDto> searchStudent(SearchStudentForm searchStudentForm) {
 		//フォームに入力された値を元に受講生を検索、結果をDTOリストに格納
 		List<SearchStudentDto> searchStudentDtoList = new ArrayList<SearchStudentDto>();
+		if(searchStudentForm.getCourseId() == 0 && searchStudentForm.getCompanyId() == 0 && searchStudentForm.getUserName() == "") {
+			searchStudentDtoList = null;
+			return searchStudentDtoList;
+		}
 		searchStudentDtoList = tSearchStudentMapper.getSearchStudentList(searchStudentForm.getCourseId(),
 				searchStudentForm.getCompanyId(), searchStudentForm.getUserName(), searchStudentForm.getPlaceId(),
 				Constants.CODE_VAL_ROLL_STUDENT, Constants.DB_FLG_FALSE);
