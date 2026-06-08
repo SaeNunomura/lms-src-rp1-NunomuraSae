@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{/common/layout :: layout(~{::title},~{::body/content()})}">
+
+<head>
+	<meta charset="UTF-8">
+	<title>勤怠一括登録｜LMS</title>
+	<script type="text/javascript" src="../../js/jquery.2.1.1.min.js"></script>
+	<script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="../../js/dataTables.bootstrap.min.js"></script>
+	<script type="text/javascript" src="../../js/bootstrap-datepicker.min.js"></script>
+	<script type="text/javascript" src="../../js/bootstrap-datepicker.ja.min.js"></script>
+	<script type="text/javascript" src="../../js/lms_common.js"></script>
+	<script type="text/javascript" src="../../js/jstree.min.js"></script>
+	<script type="text/javascript" src="../../js/currency.js"></script>
+	<script type="text/javascript" src="../../js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../../js/companyAttendance.js"></script>
+
+	<script>
+		$(function () {
+			$(document).on("click", "#submit-btn", function () {
+				var targetIndex = $(this).val();
+				$("#targetIndex").val(targetIndex);
+				var i = 0;
+
+				var index = document.getElementsByName(
+					"dailyAttendanceFormList[" + i + "].index"
+				)[0].value;
+				if (targetIndex != index) {
+					document.getElementsByName(
+						"dailyAttendanceFormList[" + i + "].trainingStartTime"
+					)[0].value = null;
+					document.getElementsByName(
+						"dailyAttendanceFormList[" + i + "].trainingEndTime"
+					)[0].value = null;
+					document.getElementsByName(
+						"dailyAttendanceFormList[" + i + "].isAbsent"
+					)[0].checked = false;
+				}
+				i++;
+
+				$("#registForm").submit();
+			});
+		});
+	</script>
+</head>
+
+<body>
+
+</body>
+
+</html>
