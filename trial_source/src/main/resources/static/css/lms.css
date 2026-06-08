@@ -23,8 +23,13 @@ div.contract {
 	border-color: red;
 }
 
+/*布村沙英 -Task.57*/
 .search-student-not-enter-check{
 	background-color: #FFD2D2;
+}
+/*布村沙英 -Task.57*/
+table.table-hover tbody tr.search-student-not-enter-check:hover {
+    background-color: #FFB5B5;
 }
 
 .warnInput {

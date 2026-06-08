@@ -70,8 +70,8 @@
 		<if test="companyId != 0">
 			AND comp.company_id = #{companyId}
 		</if>
-		<if test="userName != null and userName = ''">
-			AND u.user_name LIKE '%' || #{userName} || '%'
+		<if test="userName != null and userName.trim() != ''">
+			AND u.user_name LIKE CONCAT('%', #{userName}, '%')
 		</if>
 		<if test="placeId != null">
 			AND p.place_id = #{placeId}
