@@ -176,14 +176,14 @@ $(function(){
     });
 
     $('.datepickerFrom').datepicker({
-        format: 'yyyy-mm-dd',
+        format: 'yyyy/mm/dd',
         endDate: 'today',
         language: 'ja',
         autoclose: true
     });
 
     $('.datepickerTo').datepicker({
-        format: 'yyyy-mm-dd',
+        format: 'yyyy/mm/dd',
         endDate: 'today',
         language: 'ja',
         autoclose: true

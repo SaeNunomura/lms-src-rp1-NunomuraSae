@@ -245,6 +245,7 @@ public class AttendanceController {
 	
 	@RequestMapping(path="bulkRegist/search", params="search", method = RequestMethod.POST)
 	public String bulkRegistSearch(@Valid @ModelAttribute BulkRegistForm bulkRegistForm,BindingResult result, Model model) {
+		studentAttendanceService.searchInputCheck(bulkRegistForm, result);
 		if(result.hasErrors()) {
 			return "attendance/bulkRegist";
 		}

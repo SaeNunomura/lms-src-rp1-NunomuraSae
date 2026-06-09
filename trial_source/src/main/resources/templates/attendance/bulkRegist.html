@@ -4,44 +4,44 @@
 <head>
 	<meta charset="UTF-8">
 	<title>勤怠一括登録｜LMS</title>
-	<!--	<script type="text/javascript" src="../../js/jquery.2.1.1.min.js"></script>-->
-	<!--	<script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>-->
-	<!--	<script type="text/javascript" src="../../js/dataTables.bootstrap.min.js"></script>-->
-	<!--	<script type="text/javascript" src="../../js/bootstrap-datepicker.min.js"></script>-->
-	<!--	<script type="text/javascript" src="../../js/bootstrap-datepicker.ja.min.js"></script>-->
-	<!--	<script type="text/javascript" src="../../js/lms_common.js"></script>-->
-	<!--	<script type="text/javascript" src="../../js/jstree.min.js"></script>-->
-	<!--	<script type="text/javascript" src="../../js/currency.js"></script>-->
-	<!--	<script type="text/javascript" src="../../js/bootstrap.min.js"></script>-->
-	<!--	<script type="text/javascript" src="../../js/companyAttendance.js"></script>-->
+		<script type="text/javascript" src="../../js/jquery.2.1.1.min.js"></script>
+		<script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="../../js/dataTables.bootstrap.min.js"></script>
+		<script type="text/javascript" src="../../js/bootstrap-datepicker.min.js"></script>
+		<script type="text/javascript" src="../../js/bootstrap-datepicker.ja.min.js"></script>
+		<script type="text/javascript" src="../../js/lms_common.js"></script>
+		<script type="text/javascript" src="../../js/jstree.min.js"></script>
+		<script type="text/javascript" src="../../js/currency.js"></script>
+		<script type="text/javascript" src="../../js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../../js/companyAttendance.js"></script>
 
-	<!--	<script>-->
-	<!--		$(function () {-->
-	<!--			$(document).on("click", "#submit-btn", function () {-->
-	<!--				var targetIndex = $(this).val();-->
-	<!--				$("#targetIndex").val(targetIndex);-->
-	<!--				var i = 0;-->
+		<script>
+			$(function () {
+				$(document).on("click", "#submit-btn", function () {
+					var targetIndex = $(this).val();
+					$("#targetIndex").val(targetIndex);
+					var i = 0;
 
-	<!--				var index = document.getElementsByName(-->
-	<!--					"dailyAttendanceFormList[" + i + "].index"-->
-	<!--				)[0].value;-->
-	<!--				if (targetIndex != index) {-->
-	<!--					document.getElementsByName(-->
-	<!--						"dailyAttendanceFormList[" + i + "].trainingStartTime"-->
-	<!--					)[0].value = null;-->
-	<!--					document.getElementsByName(-->
-	<!--						"dailyAttendanceFormList[" + i + "].trainingEndTime"-->
-	<!--					)[0].value = null;-->
-	<!--					document.getElementsByName(-->
-	<!--						"dailyAttendanceFormList[" + i + "].isAbsent"-->
-	<!--					)[0].checked = false;-->
-	<!--				}-->
-	<!--				i++;-->
+					var index = document.getElementsByName(
+						"dailyAttendanceFormList[" + i + "].index"
+					)[0].value;
+					if (targetIndex != index) {
+						document.getElementsByName(
+							"dailyAttendanceFormList[" + i + "].trainingStartTime"
+						)[0].value = null;
+						document.getElementsByName(
+							"dailyAttendanceFormList[" + i + "].trainingEndTime"
+						)[0].value = null;
+						document.getElementsByName(
+							"dailyAttendanceFormList[" + i + "].isAbsent"
+						)[0].checked = false;
+					}
+					i++;
 
-	<!--				$("#registForm").submit();-->
-	<!--			});-->
-	<!--		});-->
-	<!--	</script>-->
+					$("#registForm").submit();
+				});
+			});
+		</script>
 </head>
 
 <body>
@@ -66,9 +66,9 @@
 								<label for="placeName" class="col-lg-2 control-label">期間</label>
 								<div class="col-lg-10 form-inline">
 									<input type="text" th:name="searchPeriodFrom" id="searchFrom" style="width: 10em"
-										class="form-control datepickerFrom" th:classappend="${#fields.hasErrors('searchPeriodFrom')} ? ' errorInput'" />　～　
+										class="form-control datepickerFrom" th:classappend="${#fields.hasErrors('searchPeriodFrom') or #fields.hasErrors('searchPeriod')} ? ' errorInput'" />　～　
 									<input type="text" th:name="searchPeriodTo" id="searchTo" style="width: 10em"
-										class="form-control datepickerTo" th:classappend="${#fields.hasErrors('searchPeriodFrom')} ? ' errorInput'" />
+										class="form-control datepickerTo" th:classappend="${#fields.hasErrors('searchPeriodTo') or #fields.hasErrors('searchPeriod')} ? ' errorInput'" />
 								</div>
 							</div>
 
@@ -94,7 +94,8 @@
 				</form>
 				<p th:object="${bulkRegistForm}">
 					<span th:errors="*{searchPeriodFrom}" class="error"></span><br>
-					<span th:errors="*{searchPeriodTo}" class="error"></span>
+					<span th:errors="*{searchPeriodTo}" class="error"></span><br>
+					<span th:errors="*{searchPeriod}" class="error"></span>
 				</p>
 				<!--				</form>-->
 

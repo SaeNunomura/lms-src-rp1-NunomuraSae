@@ -638,9 +638,60 @@ public class StudentAttendanceService {
 		bulkRegistForm.setPlaceName(placeName);
 		bulkRegistForm.setPlaceId(mPlace.getPlaceId());
 	}
-	
+
+	/**
+	 * 入力チェック
+	 * @param bulkRegistForm
+	 * @param result
+	 */
 	public void searchInputCheck(BulkRegistForm bulkRegistForm, BindingResult result) {
-		
+		try {
+			//今日の日付を取得
+			Date trainingDate = attendanceUtil.getTrainingDate();
+			//入力フォームの日付(String型)をDate型に変換
+			Date searchPeriodFromDate = dateUtil.parse(bulkRegistForm.getSearchPeriodFrom());
+			Date searchPeriodToDate = dateUtil.parse(bulkRegistForm.getSearchPeriodTo());
+			//入力パラメータ．期間(To)が現在日付より未来日の場合
+			if (searchPeriodToDate.after(trainingDate)) {
+				final String TO = "期間（to）";
+				final String FIELD_NAME = "searchPeriodTo";
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_SEARCHTORANGEERROR, new String[] { TO })));
+				return;
+			}
+			//入力パラメータ．期間(From)が期間(To)より未来日の場合
+			if (searchPeriodFromDate.after(searchPeriodToDate)) {
+				final String FROM = "期間（from）";
+				final String TO = "期間（to）";
+				final String FIELD_NAME = "searchPeriodFrom";
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_SEARCHPERIODCOMPAREERROR,
+								new String[] { FROM, TO })));
+				return;
+			}
+			//入力パラメータ．期間(From)～期間(To)の日数を取得
+			int differenceDays = dateUtil.differenceDays(searchPeriodToDate, searchPeriodFromDate);
+			final int MAX_PERIOD = 30;
+			//入力パラメータ．期間(From)～期間(To)の日数が30日より大きい場合
+			if (differenceDays > MAX_PERIOD) {
+				final String PERIOD = "期間";
+				final String DAYS = MAX_PERIOD + "日";
+				final String FIELD_NAME = "searchPeriod";
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_SEARCHSETTINGOVER, new String[] { PERIOD, DAYS })));
+				return;
+			}
+
+		} catch (ParseException e) {
+			throw new IllegalStateException();
+		}
+
 	}
 
 }
