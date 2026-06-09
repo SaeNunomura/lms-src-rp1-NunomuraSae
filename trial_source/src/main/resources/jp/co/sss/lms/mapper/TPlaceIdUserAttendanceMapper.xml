@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="jp.co.sss.lms.mapper.TPlaceIdUserAttendanceMapper">
+<mapper
+	namespace="jp.co.sss.lms.mapper.TPlaceIdUserAttendanceMapper">
 
-
+	<select id="findByPlaceId"
+		resultType="jp.co.sss.lms.entity.MPlace">
+		SELECT *
+		FROM m_place
+		WHERE place_id = #{placeId}
+		AND hidden_flg = #{hiddenFlg}
+		AND delete_flg = #{deleteFlg}
+	</select>
 
 </mapper>

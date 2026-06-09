@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import jakarta.validation.Valid;
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.dto.SearchStudentDto;
 import jp.co.sss.lms.form.AttendanceForm;
+import jp.co.sss.lms.form.BulkRegistForm;
 import jp.co.sss.lms.form.SearchStudentForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.AttendanceUtil;
@@ -224,6 +226,29 @@ public class AttendanceController {
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 		model.addAttribute("searchStudentForm", searchStudentForm);
 		return "attendance/detail";
+	}
+	
+	/**
+	 * 「研修管理」→「勤怠一括登録」押下
+	 * @author 布村沙英 -Task.58
+	 * @param bulkRegistForm
+	 * @param model
+	 * @return 勤怠一括登録画面
+	 */
+	@RequestMapping(path="bulkRegist", method = RequestMethod.GET)
+	public String bulkRegist(BulkRegistForm bulkRegistForm, Model model) {
+		studentAttendanceService.setBulkRegistForm(bulkRegistForm);
+		model.addAttribute("bulkRegistForm", bulkRegistForm);
+		model.addAttribute("UserAttendanceDtoList", null);
+		return "attendance/bulkRegist";
+	}
+	
+	@RequestMapping(path="bulkRegist/search", params="search", method = RequestMethod.POST)
+	public String bulkRegistSearch(@Valid @ModelAttribute BulkRegistForm bulkRegistForm,BindingResult result, Model model) {
+		if(result.hasErrors()) {
+			return "attendance/bulkRegist";
+		}
+		return "attendance/bulkRegist";
 	}
 
 }

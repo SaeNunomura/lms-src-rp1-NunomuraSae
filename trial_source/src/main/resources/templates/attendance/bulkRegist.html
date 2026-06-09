@@ -4,47 +4,194 @@
 <head>
 	<meta charset="UTF-8">
 	<title>勤怠一括登録｜LMS</title>
-	<script type="text/javascript" src="../../js/jquery.2.1.1.min.js"></script>
-	<script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" src="../../js/dataTables.bootstrap.min.js"></script>
-	<script type="text/javascript" src="../../js/bootstrap-datepicker.min.js"></script>
-	<script type="text/javascript" src="../../js/bootstrap-datepicker.ja.min.js"></script>
-	<script type="text/javascript" src="../../js/lms_common.js"></script>
-	<script type="text/javascript" src="../../js/jstree.min.js"></script>
-	<script type="text/javascript" src="../../js/currency.js"></script>
-	<script type="text/javascript" src="../../js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="../../js/companyAttendance.js"></script>
+	<!--	<script type="text/javascript" src="../../js/jquery.2.1.1.min.js"></script>-->
+	<!--	<script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>-->
+	<!--	<script type="text/javascript" src="../../js/dataTables.bootstrap.min.js"></script>-->
+	<!--	<script type="text/javascript" src="../../js/bootstrap-datepicker.min.js"></script>-->
+	<!--	<script type="text/javascript" src="../../js/bootstrap-datepicker.ja.min.js"></script>-->
+	<!--	<script type="text/javascript" src="../../js/lms_common.js"></script>-->
+	<!--	<script type="text/javascript" src="../../js/jstree.min.js"></script>-->
+	<!--	<script type="text/javascript" src="../../js/currency.js"></script>-->
+	<!--	<script type="text/javascript" src="../../js/bootstrap.min.js"></script>-->
+	<!--	<script type="text/javascript" src="../../js/companyAttendance.js"></script>-->
 
-	<script>
-		$(function () {
-			$(document).on("click", "#submit-btn", function () {
-				var targetIndex = $(this).val();
-				$("#targetIndex").val(targetIndex);
-				var i = 0;
+	<!--	<script>-->
+	<!--		$(function () {-->
+	<!--			$(document).on("click", "#submit-btn", function () {-->
+	<!--				var targetIndex = $(this).val();-->
+	<!--				$("#targetIndex").val(targetIndex);-->
+	<!--				var i = 0;-->
 
-				var index = document.getElementsByName(
-					"dailyAttendanceFormList[" + i + "].index"
-				)[0].value;
-				if (targetIndex != index) {
-					document.getElementsByName(
-						"dailyAttendanceFormList[" + i + "].trainingStartTime"
-					)[0].value = null;
-					document.getElementsByName(
-						"dailyAttendanceFormList[" + i + "].trainingEndTime"
-					)[0].value = null;
-					document.getElementsByName(
-						"dailyAttendanceFormList[" + i + "].isAbsent"
-					)[0].checked = false;
-				}
-				i++;
+	<!--				var index = document.getElementsByName(-->
+	<!--					"dailyAttendanceFormList[" + i + "].index"-->
+	<!--				)[0].value;-->
+	<!--				if (targetIndex != index) {-->
+	<!--					document.getElementsByName(-->
+	<!--						"dailyAttendanceFormList[" + i + "].trainingStartTime"-->
+	<!--					)[0].value = null;-->
+	<!--					document.getElementsByName(-->
+	<!--						"dailyAttendanceFormList[" + i + "].trainingEndTime"-->
+	<!--					)[0].value = null;-->
+	<!--					document.getElementsByName(-->
+	<!--						"dailyAttendanceFormList[" + i + "].isAbsent"-->
+	<!--					)[0].checked = false;-->
+	<!--				}-->
+	<!--				i++;-->
 
-				$("#registForm").submit();
-			});
-		});
-	</script>
+	<!--				$("#registForm").submit();-->
+	<!--			});-->
+	<!--		});-->
+	<!--	</script>-->
 </head>
 
 <body>
+	<div class="container">
+		<div id="contents" class="clearfix">
+			<div id="main" class="main2clm">
+				<h2>勤怠一括登録</h2>
+
+				<form name="attendance_bulkRegist_listActionForm" th:action="@{/attendance/bulkRegist/search}"
+					th:object="${bulkRegistForm}" method="post" class="form-horizontal">
+
+					<!--				<form name="attendance_bulkRegist_listActionForm" method="post"-->
+					<!--					th:action="@{/attendance/bulkRegist/search}" class="form-horizontal">-->
+					<div>
+						<input type="hidden" name="org.apache.struts.taglib.html.TOKEN"
+							value="c561a5fd29ca16c8536bb77fad2738bc" />
+					</div>
+					<div class="well bs-component">
+						<fieldset>
+							<legend>検索</legend>
+							<div class="form-group">
+								<label for="placeName" class="col-lg-2 control-label">期間</label>
+								<div class="col-lg-10 form-inline">
+									<input type="text" th:name="searchPeriodFrom" id="searchFrom" style="width: 10em"
+										class="form-control datepickerFrom" th:classappend="${#fields.hasErrors('searchPeriodFrom')} ? ' errorInput'" />　～　
+									<input type="text" th:name="searchPeriodTo" id="searchTo" style="width: 10em"
+										class="form-control datepickerTo" th:classappend="${#fields.hasErrors('searchPeriodFrom')} ? ' errorInput'" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="placeName" class="col-lg-2 control-label">会場名</label>
+								<div class="col-lg-10">
+									<select name="placeId" id="placeId" class="form-control">
+										<option value=""></option>
+										<option th:value="*{placeId}"
+											th:text="*{placeName}">
+										</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="col-lg-10 col-lg-offset-2">
+									<input type="submit" name="search" value="検索" class="btn btn-primary" />
+								</div>
+							</div>
+						</fieldset>
+					</div>
+				</form>
+				<p th:object="${bulkRegistForm}">
+					<span th:errors="*{searchPeriodFrom}" class="error"></span><br>
+					<span th:errors="*{searchPeriodTo}" class="error"></span>
+				</p>
+				<!--				</form>-->
+
+				<!--ここまで初期表示-->
+
+				<!--					<th:block th:unless="${UserAttendanceDtoList == null}">-->
+				<!--						<table class="table">-->
+				<!--							<tbody>-->
+				<!--								<tr style="-->
+				<!--                      background-color: #f5f5f5;-->
+				<!--                      border-top-style: solid;-->
+				<!--                      border-width: medium;-->
+				<!--                    ">-->
+				<!--									<th colspan="7">2021年2月1日(月)</th>-->
+				<!--									<th colspan="2">-->
+				<!--										<button id="copyAttendanceDaily" type="button" value="0"-->
+				<!--											class="btn btn-default">-->
+				<!--											受講生が入力した時刻をコピーする-->
+				<!--										</button>-->
+				<!--									</th>-->
+				<!--									<td>-->
+				<!--										<button id="submit-btn" type="submit" name="complete" value="0"-->
+				<!--											class="btn btn-info">-->
+				<!--											確定する-->
+				<!--										</button>-->
+				<!--										<input type="hidden" name="targetIndex" value="" id="targetIndex" />-->
+				<!--									</td>-->
+				<!--								</tr>-->
+				<!--								<tr>-->
+				<!--									<th style="width: 120px">ユーザー名</th>-->
+				<!--									<th style="width: 190px">コース名</th>-->
+				<!--									<th style="width: 90px">出勤</th>-->
+				<!--									<th style="width: 90px">退勤</th>-->
+				<!--									<th style="width: 90px">中抜け時間</th>-->
+				<!--									<th style="width: 90px">ステータス</th>-->
+				<!--									<th style="width: 50px">備考</th>-->
+				<!--									<th style="width: 90px">開始時間</th>-->
+				<!--									<th style="width: 90px">終了時間</th>-->
+				<!--									<th style="width: 50px">欠席</th>-->
+				<!--								</tr>-->
+
+				<!--								<tr>-->
+				<!--									<td>デモ受講生</td>-->
+				<!--									<td>【削除不可】体験型Java研修用【デモ】</td>-->
+				<!--									<td>[未入力]</td>-->
+				<!--									<td>[未入力]</td>-->
+				<!--									<td></td>-->
+				<!--									<td></td>-->
+				<!--									<td><strong data-toggle="popover" data-placement="right" data-content="社用のため欠勤"-->
+				<!--											data-trigger="hover" data-original-title="" title="">あり</strong></td>-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].lmsUserId" value="24463" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].userName" value="デモ受講生" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].courseName"-->
+				<!--										value="【削除不可】体験型Java研修用【デモ】" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].dispTrainingDate"-->
+				<!--										value="2021年2月1日(月)" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].trainingDate"-->
+				<!--										value="2021-02-01" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].index" value="0" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].trainingStartTimeRaw"-->
+				<!--										value="[未入力]" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].trainingEndTimeRaw"-->
+				<!--										value="[未入力]" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].blankTimeValue" value="" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].statusDispName" value="" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].note" value="" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].trainingStartTimeRounded"-->
+				<!--										value="" class="startTimeCompanyRounded0" />-->
+				<!--									<input type="hidden" name="dailyAttendanceFormList[0].trainingEndTimeRounded"-->
+				<!--										value="" class="endTimeCompanyRounded0" />-->
+				<!--									<td>-->
+				<!--										<input type="text" name="dailyAttendanceFormList[0].trainingStartTime" value=""-->
+				<!--											id="trainingStartTime" class="form-control startTimeCompany0" />-->
+				<!--									</td>-->
+				<!--									<td>-->
+				<!--										<input type="text" name="dailyAttendanceFormList[0].trainingEndTime" value=""-->
+				<!--											id="trainingEndTime" class="form-control endTimeCompany0" />-->
+				<!--									</td>-->
+				<!--									<td>-->
+				<!--										<input type="checkbox" name="dailyAttendanceFormList[0].isAbsent" value="on"-->
+				<!--											class="attendanceFormControl" />-->
+				<!--									</td>-->
+				<!--								</tr>-->
+				<!--							</tbody>-->
+				<!--						</table>-->
+				<!--					</th:block>-->
+				<!--				</form>-->
+			</div>
+			<!--#main-->
+		</div>
+		<!--#contents-->
+		<!--		<form id="screenTransForm" name="screenTransForm" method="post"></form>-->
+		<!--		<div id="push"></div>-->
+	</div>
+	</div>
+
+	<!--#container-->
 
 </body>
 

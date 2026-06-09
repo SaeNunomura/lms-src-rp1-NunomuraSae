@@ -2958,7 +2958,7 @@ input[type="search"] {
 	.checkbox-inline input[type="checkbox"] {
 	position: absolute;
 	margin-left: -20px;
-	margin-top: 4px \9
+	margin-top: 4px \9
 }
 
 .radio+.radio, .checkbox+.checkbox {
@@ -4110,13 +4110,13 @@ border-top-left-radius
 	.btn-group-vertical>.btn-group:first-child:not (:last-child )>.dropdown-toggle
 	{
 	border-bottom-right-radius: 0;
-	border-bottom-left-radius: 0
+	border-bottom-left-radius: 0;
 }
 
 .btn-group-vertical>.btn-group:last-child:not (:first-child )>.btn:first-child
 	{
 	border-top-right-radius: 0;
-	border-top-left-radius: 0
+	border-top-left-radius: 0;
 }
 
 .btn-group-justified {

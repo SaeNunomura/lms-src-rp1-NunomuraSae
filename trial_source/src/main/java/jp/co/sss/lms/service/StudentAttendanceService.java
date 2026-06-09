@@ -19,9 +19,11 @@ import jp.co.sss.lms.dto.CourseDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.dto.PlaceDto;
 import jp.co.sss.lms.dto.SearchStudentDto;
+import jp.co.sss.lms.entity.MPlace;
 import jp.co.sss.lms.entity.TStudentAttendance;
 import jp.co.sss.lms.enums.AttendanceStatusEnum;
 import jp.co.sss.lms.form.AttendanceForm;
+import jp.co.sss.lms.form.BulkRegistForm;
 import jp.co.sss.lms.form.DailyAttendanceForm;
 import jp.co.sss.lms.form.SearchStudentForm;
 import jp.co.sss.lms.mapper.TSearchStudentMapper;
@@ -55,6 +57,8 @@ public class StudentAttendanceService {
 	private TStudentAttendanceMapper tStudentAttendanceMapper;
 	@Autowired
 	private TSearchStudentMapper tSearchStudentMapper;
+	@Autowired
+	private PlaceService placeService;
 
 	/**
 	 * 勤怠一覧情報取得
@@ -608,6 +612,35 @@ public class StudentAttendanceService {
 							trainingDate));
 		}
 		return searchStudentNotEnterList;
+	}
+
+	/**
+	 * 勤怠一括登録フォームの初期設定
+	 * @author 布村沙英 -Task.58
+	 * @param bulkRegistForm
+	 */
+	public void setBulkRegistForm(BulkRegistForm bulkRegistForm) {
+		//ログインユーザーの会場IDから会場情報を取得
+		MPlace mPlace = placeService.findByPlaceId(loginUserDto.getPlaceId());
+		String placeNote = mPlace.getPlaceNote();
+		//備考に$が含まれている場合
+		if (placeNote.contains("$")) {
+			//$で切り分けString型配列を作成、2番目の要素(教室名)を抜き出し代入
+			String[] placeNoteArray = placeNote.split("\\$");
+			placeNote = placeNoteArray[1];
+		} else {
+			//備考に$が含まれていない場合、空文字を代入
+			placeNote = "";
+		}
+		//表示用会場名=会場名＋教室名
+		String placeName = mPlace.getPlaceName() + placeNote;
+		//bulkRegistFormのPlaceNameに表示用会場名、PlaceIdに会場IDをセット
+		bulkRegistForm.setPlaceName(placeName);
+		bulkRegistForm.setPlaceId(mPlace.getPlaceId());
+	}
+	
+	public void searchInputCheck(BulkRegistForm bulkRegistForm, BindingResult result) {
+		
 	}
 
 }
