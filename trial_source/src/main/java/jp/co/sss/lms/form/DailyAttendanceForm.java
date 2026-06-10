@@ -20,6 +20,10 @@ public class DailyAttendanceForm {
 	private String trainingStartTime;
 	/** 退勤時間 */
 	private String trainingEndTime;
+	/** 出勤時間(コピー用)  布村沙英 -Task.58*/
+	private String trainingStartTimeCopy;
+	/** 退勤時間(コピー用)  布村沙英 -Task.58*/
+	private String trainingEndTimeCopy;
 	/** 中抜け時間 */
 	private Integer blankTime;
 	/** 中抜け時間（画面表示用） */

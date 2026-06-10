@@ -19,5 +19,6 @@ public class BulkRegistForm {
 	/**期間(終了)*/
 	@NotBlank
 	private String searchPeriodTo;
+	/**期間(開始～終了)*/
 	private String searchPeriod;
 }

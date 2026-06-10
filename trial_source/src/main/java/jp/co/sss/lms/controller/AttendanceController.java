@@ -17,6 +17,7 @@ import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.dto.SearchStudentDto;
 import jp.co.sss.lms.form.AttendanceForm;
 import jp.co.sss.lms.form.BulkRegistForm;
+import jp.co.sss.lms.form.DailyAttendanceForm;
 import jp.co.sss.lms.form.SearchStudentForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.AttendanceUtil;
@@ -249,6 +250,10 @@ public class AttendanceController {
 		if(result.hasErrors()) {
 			return "attendance/bulkRegist";
 		}
+		List<DailyAttendanceForm> dailyAttendanceFormList = studentAttendanceService.getUserAttendance(bulkRegistForm);
+		model.addAttribute("dailyAttendanceFormList", dailyAttendanceFormList);
+		studentAttendanceService.setBulkRegistForm(bulkRegistForm);
+		model.addAttribute("bulkRegistForm", bulkRegistForm);
 		return "attendance/bulkRegist";
 	}
 

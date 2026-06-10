@@ -19,6 +19,7 @@ import jp.co.sss.lms.dto.CourseDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.dto.PlaceDto;
 import jp.co.sss.lms.dto.SearchStudentDto;
+import jp.co.sss.lms.dto.UserAttendanceDto;
 import jp.co.sss.lms.entity.MPlace;
 import jp.co.sss.lms.entity.TStudentAttendance;
 import jp.co.sss.lms.enums.AttendanceStatusEnum;
@@ -26,6 +27,7 @@ import jp.co.sss.lms.form.AttendanceForm;
 import jp.co.sss.lms.form.BulkRegistForm;
 import jp.co.sss.lms.form.DailyAttendanceForm;
 import jp.co.sss.lms.form.SearchStudentForm;
+import jp.co.sss.lms.mapper.MPlaceMapper;
 import jp.co.sss.lms.mapper.TSearchStudentMapper;
 import jp.co.sss.lms.mapper.TStudentAttendanceMapper;
 import jp.co.sss.lms.util.AttendanceUtil;
@@ -59,6 +61,8 @@ public class StudentAttendanceService {
 	private TSearchStudentMapper tSearchStudentMapper;
 	@Autowired
 	private PlaceService placeService;
+	@Autowired
+	private MPlaceMapper mPlaceMapper;
 
 	/**
 	 * 勤怠一覧情報取得
@@ -641,6 +645,7 @@ public class StudentAttendanceService {
 
 	/**
 	 * 入力チェック
+	 * @author 布村沙英 -Task.58
 	 * @param bulkRegistForm
 	 * @param result
 	 */
@@ -687,11 +692,81 @@ public class StudentAttendanceService {
 						messageUtil.getMessage(Constants.VALID_KEY_SEARCHSETTINGOVER, new String[] { PERIOD, DAYS })));
 				return;
 			}
-
 		} catch (ParseException e) {
 			throw new IllegalStateException();
 		}
 
+	}
+
+	/**
+	 * ユーザー勤怠情報を検索・取得
+	 * 
+	 * @author 布村沙英 -Task.58
+	 * @param bulkRegistForm
+	 * @return 日別勤怠情報フォームリスト
+	 */
+	public List<DailyAttendanceForm> getUserAttendance(BulkRegistForm bulkRegistForm) {
+		//フォームに入力された値からユーザー勤怠情報DTO（検索結果）リストを取得
+		List<UserAttendanceDto> userAttendanceDtoList = mPlaceMapper.getUserAttendanceDto(bulkRegistForm.getPlaceId(),
+				bulkRegistForm.getSearchPeriodFrom(), bulkRegistForm.getSearchPeriodTo(), Constants.DB_FLG_FALSE);
+		List<DailyAttendanceForm> dailyAttendanceFormList = new ArrayList<>();
+		//検索結果が0件だった場合、リストのサイズ0で処理を戻す
+		if(userAttendanceDtoList.size() == 0) {
+			return dailyAttendanceFormList;
+		}
+		//ユーザー勤怠情報DTO（検索結果）リストから1件ずつ取得
+		for (UserAttendanceDto userAttendanceDto : userAttendanceDtoList) {
+			DailyAttendanceForm dailyAttendanceForm = new DailyAttendanceForm();
+			BeanUtils.copyProperties(userAttendanceDto, dailyAttendanceForm);
+			//日付（画面表示用）をセット
+			String trainingDate = dateUtil.toString(userAttendanceDto.getTrainingDate(), "yyyy年M月d日(E)");
+			dailyAttendanceForm.setDispTrainingDate(trainingDate);
+			//出勤時間が設定されている場合
+			if (userAttendanceDto.getTrainingStartTime() != null) {
+				//出勤時間をセット
+				dailyAttendanceForm.setTrainingStartTime(userAttendanceDto.getTrainingStartTime());
+			} else {
+				//出勤時間が未入力の場合、[未入力]をセット
+				dailyAttendanceForm.setTrainingStartTime(Constants.NOT_ENTERED);
+			}
+			//退勤時間が設定されている場
+			if (userAttendanceDto.getTrainingEndTime() != null) {
+				//退勤時間をセット
+				dailyAttendanceForm.setTrainingEndTime(userAttendanceDto.getTrainingEndTime());
+			} else {
+				//退勤時間が未入力の場合、[未入力]をセット
+				dailyAttendanceForm.setTrainingEndTime(Constants.NOT_ENTERED);
+			}
+			//出勤時間が設定されている場合
+			if (userAttendanceDto.getTrainingStartTime() != null) {
+				//15分刻みで切り上げて、出勤時間(コピー用) にセット
+				TrainingTime trainingStartTime = new TrainingTime(userAttendanceDto.getTrainingStartTime());
+				trainingStartTime = trainingStartTime.roundUp();
+				dailyAttendanceForm.setTrainingStartTimeCopy(trainingStartTime.getFormattedString());
+			}
+			//退勤時間が設定されている場合
+			if (userAttendanceDto.getTrainingEndTime() != null) {
+				//15分刻みで切り捨てて、退勤時間(コピー用) にセット
+				TrainingTime trainingEndTime = new TrainingTime(userAttendanceDto.getTrainingEndTime());
+				trainingEndTime = trainingEndTime.roundDown();
+				dailyAttendanceForm.setTrainingEndTimeCopy(trainingEndTime.getFormattedString());
+			}
+			//中抜け時間が設定されている場合
+			if (userAttendanceDto.getBlankTime() != null) {
+				//中抜け時間を時：分に変換して、中抜け時間（画面表示用）にセット
+				TrainingTime blankTime = attendanceUtil.calcBlankTime(userAttendanceDto.getBlankTime());
+				dailyAttendanceForm.setBlankTimeValue(String.valueOf(blankTime));
+			}
+			// 遅刻早退区分判定
+			AttendanceStatusEnum statusEnum = AttendanceStatusEnum.getEnum(userAttendanceDto.getStatus());
+			if (statusEnum != null) {
+				dailyAttendanceForm.setStatusDispName(statusEnum.name);
+			}
+			dailyAttendanceForm.setStatus(String.valueOf(userAttendanceDto.getStatus()));
+			//dailyAttendanceFormをListに追加
+			dailyAttendanceFormList.add(dailyAttendanceForm);
+		}
+		return dailyAttendanceFormList;
 	}
 
 }
