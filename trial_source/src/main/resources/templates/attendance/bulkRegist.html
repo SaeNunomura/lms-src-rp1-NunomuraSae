@@ -4,16 +4,16 @@
 <head>
 	<meta charset="UTF-8">
 	<title>勤怠一括登録｜LMS</title>
-	<script type="text/javascript" src="../../js/jquery.2.1.1.min.js"></script>
-	<script type="text/javascript" src="../../js/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" src="../../js/dataTables.bootstrap.min.js"></script>
-	<script type="text/javascript" src="../../js/bootstrap-datepicker.min.js"></script>
-	<script type="text/javascript" src="../../js/bootstrap-datepicker.ja.min.js"></script>
-	<script type="text/javascript" src="../../js/lms_common.js"></script>
-	<script type="text/javascript" src="../../js/jstree.min.js"></script>
-	<script type="text/javascript" src="../../js/currency.js"></script>
-	<script type="text/javascript" src="../../js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="../../js/companyAttendance.js"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.2.1.1.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.dataTables.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/dataTables.bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bootstrap-datepicker.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bootstrap-datepicker.ja.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/lms_common.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jstree.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/currency.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/companyAttendance.js}"></script>
 
 	<script>
 		$(function () {
@@ -98,14 +98,15 @@
 				</p>
 
 				<!--ここまで初期表示-->
-				<form>
+				<form th:action="@{/attendance/bulkRegist/complete}" method="post">
 
 					<table class="table">
 						<tbody>
 							<th:block th:unless="${#lists.isEmpty(dailyAttendanceFormList)}"
 								th:each="dailyAttendanceForm, stat : ${dailyAttendanceFormList}">
-								<th:block th:if="${stat.first or dailyAttendanceForm.dispTrainingDate != dailyAttendanceFormList[__${stat.index-1}__].dispTrainingDate}">
-									
+								<th:block
+									th:if="${stat.first or dailyAttendanceForm.dispTrainingDate != dailyAttendanceFormList[__${stat.index-1}__].dispTrainingDate}">
+
 									<tr style="
 				                      background-color: #f5f5f5;
 				                      border-top-style: solid;
@@ -113,8 +114,8 @@
 				                    ">
 										<th colspan="7" th:text="${dailyAttendanceForm.dispTrainingDate}"></th>
 										<th colspan="2">
-											<button id="copyAttendanceDaily" type="button" value="0"
-												class="btn btn-default">
+											<button type="button" th:value="${stat.index}"
+												class="btn btn-default copyAttendanceDaily">
 												受講生が入力した時刻をコピーする
 											</button>
 										</th>
@@ -142,40 +143,65 @@
 
 								<tr th:object="${dailyAttendanceForm}">
 									<td th:text="*{userName}"></td>
-									<td>【削除不可】体験型Java研修用【デモ】</td>
-									<td>[未入力]</td>
-									<td>[未入力]</td>
-									<td></td>
-									<td></td>
-									<td><strong data-toggle="popover" data-placement="right" data-content="社用のため欠勤"
-											data-trigger="hover" data-original-title="" title="">あり</strong></td>
-									<input type="hidden" name="dailyAttendanceFormList[0].lmsUserId" value="24463" />
-									<input type="hidden" name="dailyAttendanceFormList[0].userName" value="デモ受講生" />
-									<input type="hidden" name="dailyAttendanceFormList[0].courseName"
-										value="【削除不可】体験型Java研修用【デモ】" />
-									<input type="hidden" name="dailyAttendanceFormList[0].dispTrainingDate"
-										value="2021年2月1日(月)" />
-									<input type="hidden" name="dailyAttendanceFormList[0].trainingDate"
-										value="2021-02-01" />
-									<input type="hidden" name="dailyAttendanceFormList[0].index" value="0" />
-									<input type="hidden" name="dailyAttendanceFormList[0].trainingStartTimeRaw"
-										value="[未入力]" />
-									<input type="hidden" name="dailyAttendanceFormList[0].trainingEndTimeRaw"
-										value="[未入力]" />
-									<input type="hidden" name="dailyAttendanceFormList[0].blankTimeValue" value="" />
-									<input type="hidden" name="dailyAttendanceFormList[0].statusDispName" value="" />
-									<input type="hidden" name="dailyAttendanceFormList[0].note" value="" />
-									<input type="hidden" name="dailyAttendanceFormList[0].trainingStartTimeRounded"
-										value="" class="startTimeCompanyRounded0" />
-									<input type="hidden" name="dailyAttendanceFormList[0].trainingEndTimeRounded"
-										value="" class="endTimeCompanyRounded0" />
+									<td th:text="*{courseName}"></td>
+									<td th:text="*{trainingStartTime}"></td>
+									<td th:text="*{trainingEndTime}"></td>
+									<td th:text="*{blankTimeValue}"></td>
+									<td th:text="*{statusDispName}"></td>
+
+									<td th:if="${#strings.isEmpty(dailyAttendanceForm.note)}"><strong
+											data-toggle="popover" data-placement="right" data-trigger="hover"
+											data-original-title="" title="">なし</strong></td>
+									<td th:unless="${#strings.isEmpty(dailyAttendanceForm.note)}"><strong
+											data-toggle="popover" data-placement="right"
+											th:data-content="${dailyAttendanceForm.note}" data-trigger="hover"
+											data-original-title="" title="">あり</strong></td>
+									<input type="hidden" th:name="|dailyAttendanceFormList[${stat.index}].lmsUserId|"
+										th:value="*{lmsUserId}" />
+									<input type="hidden" th:name="|dailyAttendanceFormList[${stat.index}].userName|"
+										th:value="*{userName}" />
+									<input type="hidden" th:name="|dailyAttendanceFormList[${stat.index}].courseName|"
+										th:value="*{courseName}" />
+									<input type="hidden"
+										th:name="|dailyAttendanceFormList[${stat.index}].dispTrainingDate|"
+										th:value="*{dispTrainingDate}" />
+									<input type="hidden" th:name="|dailyAttendanceFormList[${stat.index}].trainingDate|"
+										th:value="*{trainingDate}" />
+									<input type="hidden" th:name="|dailyAttendanceFormList[${stat.index}].index|"
+										th:value="${stat.index}" />
+									<input type="hidden"
+										th:name="|dailyAttendanceFormList[${stat.index}].trainingStartTimeRaw|"
+										th:value="[未入力]" />
+									<input type="hidden"
+										th:name="|dailyAttendanceFormList[${stat.index}].trainingEndTimeRaw|"
+										th:value="[未入力]" />
+									<input type="hidden"
+										th:name="|dailyAttendanceFormList[${stat.index}].blankTimeValue|"
+										th:value="*{blankTimeValue}" />
+									<input type="hidden"
+										th:name="|dailyAttendanceFormList[${stat.index}].statusDispName|"
+										th:value="*{statusDispName}" />
+									<input type="hidden" th:name="|dailyAttendanceFormList[${stat.index}].note|"
+										th:value="*{note}" />
+									<input type="hidden"
+										th:name="|dailyAttendanceFormList[${stat.index}].trainingStartTimeCopy|"
+										th:value="*{trainingStartTimeCopy}"
+										th:classappend="| startTimeCompanyRounded${stat.index}|" />
+									<input type="hidden"
+										th:name="|dailyAttendanceFormList[${stat.index}].trainingEndTimeCopy|"
+										th:value="*{trainingEndTimeCopy}"
+										th:classappend="| endTimeCompanyRounded${stat.index}|" />
 									<td>
-										<input type="text" name="dailyAttendanceFormList[0].trainingStartTime" value=""
-											id="trainingStartTime" class="form-control startTimeCompany0" />
+										<input type="text"
+											th:name="|dailyAttendanceFormList[${stat.index}].trainingStartTime|"
+											value="" id="trainingStartTime" class="form-control"
+											th:classappend="| startTimeCompany${stat.index}|" />
 									</td>
 									<td>
-										<input type="text" name="dailyAttendanceFormList[0].trainingEndTime" value=""
-											id="trainingEndTime" class="form-control endTimeCompany0" />
+										<input type="text"
+											th:name="|dailyAttendanceFormList[${stat.index}].trainingEndTime|" value=""
+											id="trainingEndTime" class="form-control"
+											th:classappend="| endTimeCompany${stat.index}|" />
 									</td>
 									<td>
 										<input type="checkbox" name="dailyAttendanceFormList[0].isAbsent" value="on"

@@ -110,6 +110,7 @@ public class TrainingTime implements Comparable<TrainingTime>, Serializable {
 		if (StringUtils.isEmpty(timeStr)) {
 			return;
 		}
+		System.out.println("★★★★★★★setTimeStr()実行★★★★★★★");
 		setTimeStr(timeStr);
 	}
 
@@ -144,6 +145,8 @@ public class TrainingTime implements Comparable<TrainingTime>, Serializable {
 		}
 		this.hour = hour;
 		this.minute = minute;
+		System.out.println("★★★★★★★TrainingTime.hour:" + this.hour +"★★★★★★★");
+		System.out.println("★★★★★★★TrainingTime.minute:" + this.minute +"★★★★★★★");
 	}
 
 	/**

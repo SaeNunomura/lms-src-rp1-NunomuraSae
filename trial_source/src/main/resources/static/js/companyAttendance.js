@@ -3,6 +3,7 @@
  * 
  * @author 東京ITスクール
  */
+
 $(function(){
 	  $('.copyAttendanceDaily').click(function(){
 			const index = $(this).val();

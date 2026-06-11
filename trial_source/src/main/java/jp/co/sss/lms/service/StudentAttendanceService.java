@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import com.amazonaws.util.StringUtils;
+
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.CompanyDto;
 import jp.co.sss.lms.dto.CourseDto;
@@ -738,16 +740,20 @@ public class StudentAttendanceService {
 				dailyAttendanceForm.setTrainingEndTime(Constants.NOT_ENTERED);
 			}
 			//出勤時間が設定されている場合
-			if (userAttendanceDto.getTrainingStartTime() != null) {
+			if (!StringUtils.isNullOrEmpty(userAttendanceDto.getTrainingStartTime())) {
 				//15分刻みで切り上げて、出勤時間(コピー用) にセット
 				TrainingTime trainingStartTime = new TrainingTime(userAttendanceDto.getTrainingStartTime());
+				System.out.println("◆◆◆◆◆◆◆TrainingTime.hour:" + trainingStartTime.getHour() +"◆◆◆◆◆◆◆");
+				System.out.println("◆◆◆◆◆◆◆TrainingTime.minute:" + trainingStartTime.getMinute() +"◆◆◆◆◆◆◆");
 				trainingStartTime = trainingStartTime.roundUp();
 				dailyAttendanceForm.setTrainingStartTimeCopy(trainingStartTime.getFormattedString());
 			}
 			//退勤時間が設定されている場合
-			if (userAttendanceDto.getTrainingEndTime() != null) {
+			if (!StringUtils.isNullOrEmpty(userAttendanceDto.getTrainingEndTime())) {
 				//15分刻みで切り捨てて、退勤時間(コピー用) にセット
 				TrainingTime trainingEndTime = new TrainingTime(userAttendanceDto.getTrainingEndTime());
+				System.out.println("◆◆◆◆◆◆◆TrainingTime.hour:" + trainingEndTime.getHour() +"◆◆◆◆◆◆◆");
+				System.out.println("◆◆◆◆◆◆◆TrainingTime.minute:" + trainingEndTime.getMinute() +"◆◆◆◆◆◆◆");
 				trainingEndTime = trainingEndTime.roundDown();
 				dailyAttendanceForm.setTrainingEndTimeCopy(trainingEndTime.getFormattedString());
 			}
@@ -760,12 +766,22 @@ public class StudentAttendanceService {
 			// 遅刻早退区分判定
 			AttendanceStatusEnum statusEnum = AttendanceStatusEnum.getEnum(userAttendanceDto.getStatus());
 			if (statusEnum != null) {
+				// ステータス（画面表示用）をセット
 				dailyAttendanceForm.setStatusDispName(statusEnum.name);
 			}
+			//ステータスをセット
 			dailyAttendanceForm.setStatus(String.valueOf(userAttendanceDto.getStatus()));
+			//備考欄が入力されている場合
+			if(userAttendanceDto.getNote() != null) {
+				//備考をセット
+				dailyAttendanceForm.setNote(userAttendanceDto.getNote());
+			} else {
+				//備考欄が入力されていない場合、空文字をセット
+				dailyAttendanceForm.setNote("");
+			}
 			//dailyAttendanceFormをListに追加
 			dailyAttendanceFormList.add(dailyAttendanceForm);
-		}
+		}
 		return dailyAttendanceFormList;
 	}
 
