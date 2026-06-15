@@ -203,7 +203,8 @@ public class AttendanceController {
 		List<SearchStudentDto> searchStudentDtoList = studentAttendanceService.searchStudent(searchStudentForm);
 		model.addAttribute("searchStudentDtoList", searchStudentDtoList);
 		//検索結果の受講生ごとの過去日勤怠未入力チェック
-		List<Boolean> searchStudentNotEnterCheckList = studentAttendanceService.searchStudentNotEnterCheck(searchStudentDtoList);
+		List<Boolean> searchStudentNotEnterCheckList = studentAttendanceService
+				.searchStudentNotEnterCheck(searchStudentDtoList);
 		model.addAttribute("searchStudentNotEnterCheckList", searchStudentNotEnterCheckList);
 		//ログインしている者の会場IDを元に、受講生検索フォームを取得
 		model.addAttribute("searchStudentForm",
@@ -228,7 +229,7 @@ public class AttendanceController {
 		model.addAttribute("searchStudentForm", searchStudentForm);
 		return "attendance/detail";
 	}
-	
+
 	/**
 	 * 「研修管理」→「勤怠一括登録」押下
 	 * @author 布村沙英 -Task.58
@@ -236,22 +237,53 @@ public class AttendanceController {
 	 * @param model
 	 * @return 勤怠一括登録画面
 	 */
-	@RequestMapping(path="bulkRegist", method = RequestMethod.GET)
+	@RequestMapping(path = "bulkRegist", method = RequestMethod.GET)
 	public String bulkRegist(BulkRegistForm bulkRegistForm, Model model) {
 		studentAttendanceService.setBulkRegistForm(bulkRegistForm);
 		model.addAttribute("bulkRegistForm", bulkRegistForm);
-		model.addAttribute("UserAttendanceDtoList", null);
 		return "attendance/bulkRegist";
 	}
-	
-	@RequestMapping(path="bulkRegist/search", params="search", method = RequestMethod.POST)
-	public String bulkRegistSearch(@Valid @ModelAttribute BulkRegistForm bulkRegistForm,BindingResult result, Model model) {
+
+	/**
+	 * 勤怠一括登録画面『検索』ボタン押下
+	 * 
+	 * @author 布村沙英 -Task.58
+	 * @param bulkRegistForm
+	 * @param result
+	 * @param model
+	 * @return勤怠一括登録画面
+	 */
+	@RequestMapping(path = "bulkRegist/search", params = "search", method = RequestMethod.POST)
+	public String bulkRegistSearch(@Valid @ModelAttribute BulkRegistForm bulkRegistForm, BindingResult result,
+			Model model) {
+		//検索フォームの入力チェック
 		studentAttendanceService.searchInputCheck(bulkRegistForm, result);
-		if(result.hasErrors()) {
+		if (result.hasErrors()) {
 			return "attendance/bulkRegist";
 		}
+		//検索結果から日別受講生勤怠情報リストを取得、スコープに保存
 		List<DailyAttendanceForm> dailyAttendanceFormList = studentAttendanceService.getUserAttendance(bulkRegistForm);
 		model.addAttribute("dailyAttendanceFormList", dailyAttendanceFormList);
+		//初期表示処理
+		studentAttendanceService.setBulkRegistForm(bulkRegistForm);
+		model.addAttribute("bulkRegistForm", bulkRegistForm);
+		return "attendance/bulkRegist";
+	}
+
+	@RequestMapping(path = "bulkRegist/complete", params = "complete", method = RequestMethod.POST)
+	public String bulkRegistComplete(@ModelAttribute BulkRegistForm bulkRegistForm, Model model, BindingResult result) {
+		studentAttendanceService.bulkRegistInputCheck(bulkRegistForm, result);
+		if (result.hasErrors()) {
+			//検索結果から日別受講生勤怠情報リストを取得、スコープに保存
+			List<DailyAttendanceForm> dailyAttendanceFormList = studentAttendanceService
+					.getUserAttendance(bulkRegistForm);
+			model.addAttribute("dailyAttendanceFormList", dailyAttendanceFormList);
+			//初期表示処理
+			studentAttendanceService.setBulkRegistForm(bulkRegistForm);
+			model.addAttribute("bulkRegistForm", bulkRegistForm);
+			return "attendance/bulkRegist";
+		}
+		//初期表示のための仮コード
 		studentAttendanceService.setBulkRegistForm(bulkRegistForm);
 		model.addAttribute("bulkRegistForm", bulkRegistForm);
 		return "attendance/bulkRegist";

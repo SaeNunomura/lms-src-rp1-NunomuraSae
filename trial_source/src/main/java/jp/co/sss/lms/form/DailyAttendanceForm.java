@@ -58,5 +58,10 @@ public class DailyAttendanceForm {
 	private Integer trainingEndTimeHour;
 	/**退勤時間(分) 布村沙英 -Task.26*/
 	private Integer trainingEndTimeMin;
-
+	/**欠席フラグ  布村沙英 -Task.58*/
+	private boolean isAbsent;
+	/**勤務時間  布村沙英 -Task.58*/
+	private Integer trainingTimeRange;
+	/**出勤退勤時間フォーマット  布村沙英 -Task.58*/
+	private boolean trainingTimeFormat;
 }

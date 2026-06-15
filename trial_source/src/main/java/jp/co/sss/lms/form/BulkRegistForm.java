@@ -1,5 +1,7 @@
 package jp.co.sss.lms.form;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -21,4 +23,6 @@ public class BulkRegistForm {
 	private String searchPeriodTo;
 	/**期間(開始～終了)*/
 	private String searchPeriod;
+	/**日別勤怠フォームリスト*/
+	private List<DailyAttendanceForm> dailyAttendanceFormList;
 }

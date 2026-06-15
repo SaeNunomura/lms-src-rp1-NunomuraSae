@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -646,7 +648,7 @@ public class StudentAttendanceService {
 	}
 
 	/**
-	 * 入力チェック
+	 * 『検索』ボタン押下時入力チェック
 	 * @author 布村沙英 -Task.58
 	 * @param bulkRegistForm
 	 * @param result
@@ -713,7 +715,7 @@ public class StudentAttendanceService {
 				bulkRegistForm.getSearchPeriodFrom(), bulkRegistForm.getSearchPeriodTo(), Constants.DB_FLG_FALSE);
 		List<DailyAttendanceForm> dailyAttendanceFormList = new ArrayList<>();
 		//検索結果が0件だった場合、リストのサイズ0で処理を戻す
-		if(userAttendanceDtoList.size() == 0) {
+		if (userAttendanceDtoList.size() == 0) {
 			return dailyAttendanceFormList;
 		}
 		//ユーザー勤怠情報DTO（検索結果）リストから1件ずつ取得
@@ -743,8 +745,6 @@ public class StudentAttendanceService {
 			if (!StringUtils.isNullOrEmpty(userAttendanceDto.getTrainingStartTime())) {
 				//15分刻みで切り上げて、出勤時間(コピー用) にセット
 				TrainingTime trainingStartTime = new TrainingTime(userAttendanceDto.getTrainingStartTime());
-				System.out.println("◆◆◆◆◆◆◆TrainingTime.hour:" + trainingStartTime.getHour() +"◆◆◆◆◆◆◆");
-				System.out.println("◆◆◆◆◆◆◆TrainingTime.minute:" + trainingStartTime.getMinute() +"◆◆◆◆◆◆◆");
 				trainingStartTime = trainingStartTime.roundUp();
 				dailyAttendanceForm.setTrainingStartTimeCopy(trainingStartTime.getFormattedString());
 			}
@@ -752,8 +752,6 @@ public class StudentAttendanceService {
 			if (!StringUtils.isNullOrEmpty(userAttendanceDto.getTrainingEndTime())) {
 				//15分刻みで切り捨てて、退勤時間(コピー用) にセット
 				TrainingTime trainingEndTime = new TrainingTime(userAttendanceDto.getTrainingEndTime());
-				System.out.println("◆◆◆◆◆◆◆TrainingTime.hour:" + trainingEndTime.getHour() +"◆◆◆◆◆◆◆");
-				System.out.println("◆◆◆◆◆◆◆TrainingTime.minute:" + trainingEndTime.getMinute() +"◆◆◆◆◆◆◆");
 				trainingEndTime = trainingEndTime.roundDown();
 				dailyAttendanceForm.setTrainingEndTimeCopy(trainingEndTime.getFormattedString());
 			}
@@ -772,7 +770,7 @@ public class StudentAttendanceService {
 			//ステータスをセット
 			dailyAttendanceForm.setStatus(String.valueOf(userAttendanceDto.getStatus()));
 			//備考欄が入力されている場合
-			if(userAttendanceDto.getNote() != null) {
+			if (userAttendanceDto.getNote() != null) {
 				//備考をセット
 				dailyAttendanceForm.setNote(userAttendanceDto.getNote());
 			} else {
@@ -781,8 +779,121 @@ public class StudentAttendanceService {
 			}
 			//dailyAttendanceFormをListに追加
 			dailyAttendanceFormList.add(dailyAttendanceForm);
-		}
+		}
+
 		return dailyAttendanceFormList;
+	}
+
+	/**
+	 * 『確定ボタン』押下時入力チェック
+	 * 
+	 * @author 布村沙英 -Task.58
+	 * @param bulkRegistForm
+	 * @param result
+	 */
+	public void bulkRegistInputCheck(BulkRegistForm bulkRegistForm, BindingResult result) {
+		for (int i = 0; i < bulkRegistForm.getDailyAttendanceFormList().size(); i++) {
+			DailyAttendanceForm dailyAttendanceForm = bulkRegistForm.getDailyAttendanceFormList().get(i);
+			// 日付（画面表示用）を取得、以後エラー時のパラメータとして使用
+			final String TRAINING_DATE = dailyAttendanceForm.getDispTrainingDate();
+			boolean hasError = false;
+			//欠席フラグが立っている、かつ開始・終了時間のどちらかに値がある場合
+			if (dailyAttendanceForm.isAbsent()
+					&& (!StringUtils.isNullOrEmpty(dailyAttendanceForm.getTrainingStartTime())
+							|| !StringUtils.isNullOrEmpty(dailyAttendanceForm.getTrainingEndTime()))) {
+				System.out.println("★★★★★★★★★★入力チェック①★★★★★★★★★");
+				final String FIELD_NAME = String.format("dailyAttendanceFormList[%d].absent", i);
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_ABSENTANDTRAININGTIMEEXISTSBULK,
+								new String[] { TRAINING_DATE })));
+				hasError = true;
+			}
+			//欠席フラグが立っていない、かつ開始・終了時間に値がない場合
+			if (!dailyAttendanceForm.isAbsent()
+					&& (StringUtils.isNullOrEmpty(dailyAttendanceForm.getTrainingStartTime())
+							&& StringUtils.isNullOrEmpty(dailyAttendanceForm.getTrainingEndTime()))) {
+				final String FIELD_NAME = String.format("dailyAttendanceFormList[%d].absent", i);
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_REQUIREDTRAININGTIMEBULK,
+								new String[] { TRAINING_DATE })));
+				hasError = true;
+			}
+			//欠席フラグについての入力チェックに引っかかった場合、以後の処理をスキップ
+			if (hasError) {
+				continue;
+			}
+			//時刻の正規表現を設定(hh:mm)
+			Pattern p = Pattern.compile("^([01]?[0-9]|2[0-4]):([0-5][0-9])$");
+			Matcher mStart = p.matcher(dailyAttendanceForm.getTrainingStartTime());
+			Matcher mEnd = p.matcher(dailyAttendanceForm.getTrainingEndTime());
+			//出勤時刻がhh:mm形式ではない場合
+			if (!mStart.find()) {
+				final String FIELD_NAME = String.format("dailyAttendanceFormList[%d].trainingTimeFormat", i);
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_TRAININGTIMEBULK,
+								new String[] { TRAINING_DATE })));
+				hasError = true;
+			}
+			//退勤時刻がhh:mm形式ではない場合
+			if (!mEnd.find()) {
+				final String FIELD_NAME = String.format("dailyAttendanceFormList[%d].trainingTimeFormat", i);
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_TRAININGTIMEBULK,
+								new String[] { TRAINING_DATE })));
+				hasError = true;
+			}
+			//時刻の正規表現についての入力チェックに引っかかった場合、以後の処理をスキップ
+			if (hasError) {
+				continue;
+			}
+
+			String startTimeStr = dailyAttendanceForm.getTrainingStartTime().replace(":", "");
+			Integer startTimeInt = Integer.parseInt(startTimeStr);
+			final Integer MAX_TIME = 2400;
+			//出勤時間の値が24:00を超える場合
+			if (startTimeInt > MAX_TIME) {
+				final String FIELD_NAME = String.format("dailyAttendanceFormList[%d].trainingStartTime", i);
+				final String MAX_TIME_STR = "24:00";
+				final String START＿TIME = "出勤時間";
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_MAXVALBULK,
+								new String[] { TRAINING_DATE, START＿TIME, MAX_TIME_STR })));
+			}
+
+			String endTimeStr = dailyAttendanceForm.getTrainingEndTime().replace(":", "");
+			Integer endTimeInt = Integer.parseInt(endTimeStr);
+			//退勤時間の値が24:00を超える場合
+			if (endTimeInt > MAX_TIME) {
+				final String FIELD_NAME = String.format("dailyAttendanceFormList[%d].trainingEndTime", i);
+				final String MAX_TIME_STR = "24:00";
+				final String END＿TIME = "退勤時間";
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_MAXVALBULK,
+								new String[] { TRAINING_DATE, END＿TIME, MAX_TIME_STR })));
+			}
+			//出勤時間が退勤時間より遅い場合
+			if (startTimeInt > endTimeInt) {
+				final String FIELD_NAME = String.format("dailyAttendanceFormList[%d].trainingTimeRange", i);
+				result.addError(new FieldError(
+						result.getObjectName(),
+						FIELD_NAME,
+						messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGEBULK,
+								new String[] { TRAINING_DATE })));
+			}
+
+		}
 	}
 
 }
