@@ -49,6 +49,15 @@
 		<div id="contents" class="clearfix">
 			<div id="main" class="main2clm">
 				<h2>勤怠一括登録</h2>
+				<!-- 完了メッセージ -->
+				<th:block th:if="${not #strings.isEmpty(message)}" id="message">
+					<div class="alert alert-info alert-dismissible fade in" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+						<span>[[${message}]]</span>
+					</div>
+				</th:block>
 
 				<form name="attendance_bulkRegist_listActionForm" th:action="@{/attendance/bulkRegist/search}"
 					th:object="${bulkRegistForm}" method="post" class="form-horizontal">
@@ -101,7 +110,7 @@
 				<th:block th:unless="${#lists.isEmpty(dailyAttendanceFormList)}">
 					<th:block th:object="${bulkRegistForm}">
 						<p th:each="dailyAttendanceForm , stat : ${bulkRegistForm.dailyAttendanceFormList}">
-							<span th:errors="*{dailyAttendanceFormList[__${stat.index}__].absent}"
+							<span th:errors="*{dailyAttendanceFormList[__${stat.index}__].isAbsent}"
 								class="help-inline error"></span>
 							<span th:errors="*{dailyAttendanceFormList[__${stat.index}__].trainingTimeFormat}"
 								class="help-inline error"></span>
@@ -218,18 +227,18 @@
 												<input type="text"
 													th:name="|dailyAttendanceFormList[${stat.index}].trainingStartTime|"
 													value="" id="trainingStartTime" class="form-control"
-													th:classappend="${#fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].absent') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingStartTime') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingTimeFormat') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingTimeRange')} ? ' errorInput' + | startTimeCompany${stat.index}|" />
+													th:classappend="${#fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].isAbsent') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingStartTime') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingTimeFormat') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingTimeRange')} ? ' errorInput' + | startTimeCompany${stat.index}|" />
 											</td>
 											<td>
 												<input type="text"
 													th:name="|dailyAttendanceFormList[${stat.index}].trainingEndTime|"
 													value="" id="trainingEndTime" class="form-control"
-													th:classappend="${#fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].absent') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingStartTime') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingTimeFormat') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingTimeRange')} ? ' errorInput' + | startTimeCompany${stat.index}|" />
+													th:classappend="${#fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].isAbsent') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingStartTime') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingTimeFormat') or #fields.hasErrors('dailyAttendanceFormList[' + stat.index + '].trainingTimeRange')} ? ' errorInput' + | startTimeCompany${stat.index}|" />
 											</td>
 										</th:block>
 										<td>
 											<input type="checkbox"
-												th:name="|dailyAttendanceFormList[${stat.index}].absent|" value="on"
+												th:name="|dailyAttendanceFormList[${stat.index}].isAbsent|" value="on"
 												class="attendanceFormControl" />
 										</td>
 									</tr>

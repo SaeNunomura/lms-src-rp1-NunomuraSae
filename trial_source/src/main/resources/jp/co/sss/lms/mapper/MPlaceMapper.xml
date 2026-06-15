@@ -66,6 +66,12 @@
 		p.place_id = #{placeId} 
 		AND 
 		p.delete_flg = #{deleteFlg}
+		AND
+        (l.lms_user_id = 16
+		OR
+		l.lms_user_id = 18
+		OR
+		l.lms_user_id = 19)
 		ORDER BY 
 		s.date ASC, l.lms_user_id ASC
 		]]>

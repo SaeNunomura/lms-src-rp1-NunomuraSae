@@ -10,4 +10,8 @@ public interface TCompanyAttendanceMapper {
 
 	TCompanyAttendance findByCompanyAttendanceId(@Param("companyAttendanceId") Integer companyAttendanceId,
 			@Param("deleteFlg") short deleteFlg);
+
+	Boolean insert(TCompanyAttendance tCompanyAttendance);
+	
+	Boolean update(TCompanyAttendance tCompanyAttendance);
 }

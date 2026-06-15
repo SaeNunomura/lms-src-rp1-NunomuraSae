@@ -270,9 +270,20 @@ public class AttendanceController {
 		return "attendance/bulkRegist";
 	}
 
+	/**
+	 * 勤怠一括登録画面『確定』ボタン押下
+	 * 
+	 * @author 布村沙英 -Task.58
+	 * @param bulkRegistForm
+	 * @param model
+	 * @param result
+	 * @return 勤怠一括登録画面
+	 */
 	@RequestMapping(path = "bulkRegist/complete", params = "complete", method = RequestMethod.POST)
 	public String bulkRegistComplete(@ModelAttribute BulkRegistForm bulkRegistForm, Model model, BindingResult result) {
+		//打刻フォームの入力チェック
 		studentAttendanceService.bulkRegistInputCheck(bulkRegistForm, result);
+		//入力エラーがあった場合
 		if (result.hasErrors()) {
 			//検索結果から日別受講生勤怠情報リストを取得、スコープに保存
 			List<DailyAttendanceForm> dailyAttendanceFormList = studentAttendanceService
@@ -283,7 +294,10 @@ public class AttendanceController {
 			model.addAttribute("bulkRegistForm", bulkRegistForm);
 			return "attendance/bulkRegist";
 		}
-		//初期表示のための仮コード
+		//登録・更新処理
+		String message = studentAttendanceService.bulkUpdate(bulkRegistForm);
+		model.addAttribute("message", message);
+		//勤怠一括登録初期表示
 		studentAttendanceService.setBulkRegistForm(bulkRegistForm);
 		model.addAttribute("bulkRegistForm", bulkRegistForm);
 		return "attendance/bulkRegist";

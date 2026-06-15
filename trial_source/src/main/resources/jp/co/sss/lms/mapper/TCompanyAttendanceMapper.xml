@@ -2,7 +2,59 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.co.sss.lms.mapper.TCompanyAttendanceMapper">
-<select id="findByCompanyAttendanceId" resultType="TCompanyAttendance">
-
-</select>
+	<select id="findByCompanyAttendanceId"
+		resultType="jp.co.sss.lms.entity.TCompanyAttendance">
+		SELECT
+		*
+		FROM
+		t_company_attendance
+		WHERE
+		company_attendance_id =
+		#{companyAttendanceId}
+		AND
+		delete_flg = #{deleteFlg}
+	</select>
+	<insert id="insert"
+		parameterType="jp.co.sss.lms.entity.TCompanyAttendance"
+		useGeneratedKeys="true" keyProperty="companyAttendanceId">
+		INSERT INTO t_company_attendance
+		(
+		lms_user_id,
+		training_date,
+		training_start_time,
+		training_end_time,
+		status,
+		account_id,
+		delete_flg,
+		first_create_user,
+		first_create_date,
+		last_modified_user,
+		last_modified_date
+		)
+		VALUES(
+		#{lmsUserId},
+		#{trainingDate},
+		#{trainingStartTime},
+		#{trainingEndTime},
+		#{status},
+		#{accountId},
+		#{deleteFlg},
+		#{firstCreateUser},
+		#{firstCreateDate},
+		#{lastModifiedUser},
+		#{lastModifiedDate}
+		)
+	</insert>
+	
+	<update id="update" parameterType="jp.co.sss.lms.entity.TCompanyAttendance">
+	UPDATE t_company_attendance 
+	SET 
+	training_start_time = #{rainingStartTime}, 
+	training_end_time = #{trainingEndTime}, 
+	status = #{status}, 
+	last_modified_user = #{lastModifiedUser},
+	last_modified_date = #{lastModifiedDate}
+	WHERE 
+	company_attendance_id = #{companyAttendanceId}
+	</update>
 </mapper>

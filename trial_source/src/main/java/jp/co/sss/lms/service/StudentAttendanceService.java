@@ -25,6 +25,7 @@ import jp.co.sss.lms.dto.PlaceDto;
 import jp.co.sss.lms.dto.SearchStudentDto;
 import jp.co.sss.lms.dto.UserAttendanceDto;
 import jp.co.sss.lms.entity.MPlace;
+import jp.co.sss.lms.entity.TCompanyAttendance;
 import jp.co.sss.lms.entity.TStudentAttendance;
 import jp.co.sss.lms.enums.AttendanceStatusEnum;
 import jp.co.sss.lms.form.AttendanceForm;
@@ -32,6 +33,7 @@ import jp.co.sss.lms.form.BulkRegistForm;
 import jp.co.sss.lms.form.DailyAttendanceForm;
 import jp.co.sss.lms.form.SearchStudentForm;
 import jp.co.sss.lms.mapper.MPlaceMapper;
+import jp.co.sss.lms.mapper.TCompanyAttendanceMapper;
 import jp.co.sss.lms.mapper.TSearchStudentMapper;
 import jp.co.sss.lms.mapper.TStudentAttendanceMapper;
 import jp.co.sss.lms.util.AttendanceUtil;
@@ -67,6 +69,8 @@ public class StudentAttendanceService {
 	private PlaceService placeService;
 	@Autowired
 	private MPlaceMapper mPlaceMapper;
+	@Autowired
+	private TCompanyAttendanceMapper tCompanyAttendanceMapper;
 
 	/**
 	 * 勤怠一覧情報取得
@@ -798,7 +802,7 @@ public class StudentAttendanceService {
 			final String TRAINING_DATE = dailyAttendanceForm.getDispTrainingDate();
 			boolean hasError = false;
 			//欠席フラグが立っている、かつ開始・終了時間のどちらかに値がある場合
-			if (dailyAttendanceForm.isAbsent()
+			if (dailyAttendanceForm.getIsAbsent()
 					&& (!StringUtils.isNullOrEmpty(dailyAttendanceForm.getTrainingStartTime())
 							|| !StringUtils.isNullOrEmpty(dailyAttendanceForm.getTrainingEndTime()))) {
 				System.out.println("★★★★★★★★★★入力チェック①★★★★★★★★★");
@@ -811,7 +815,7 @@ public class StudentAttendanceService {
 				hasError = true;
 			}
 			//欠席フラグが立っていない、かつ開始・終了時間に値がない場合
-			if (!dailyAttendanceForm.isAbsent()
+			if (!dailyAttendanceForm.getIsAbsent()
 					&& (StringUtils.isNullOrEmpty(dailyAttendanceForm.getTrainingStartTime())
 							&& StringUtils.isNullOrEmpty(dailyAttendanceForm.getTrainingEndTime()))) {
 				final String FIELD_NAME = String.format("dailyAttendanceFormList[%d].absent", i);
@@ -894,6 +898,125 @@ public class StudentAttendanceService {
 			}
 
 		}
+	}
+
+	/**
+	 * 勤怠情報（企業入力）テーブルのデータ登録／更新
+	 * 
+	 * @author 布村沙英 -Task.58
+	 * @param bulkRegistForm
+	 * @return
+	 */
+	public String bulkUpdate(BulkRegistForm bulkRegistForm) {
+		List<TCompanyAttendance> tCompanyAttendanceList = new ArrayList<>();
+		//勤怠情報（企業入力）リストの設定
+		for (DailyAttendanceForm dailyAttendanceForm : bulkRegistForm.getDailyAttendanceFormList()) {
+			TCompanyAttendance tCompanyAttendance = new TCompanyAttendance();
+			//企業入力勤怠情報IDが設定されている場合
+			if (dailyAttendanceForm.getCompanyAttendanceId() != null) {
+				//企業入力勤怠情報IDを元に勤怠情報（企業入力）を取得
+				tCompanyAttendance = tCompanyAttendanceMapper.findByCompanyAttendanceId(
+						dailyAttendanceForm.getCompanyAttendanceId(), Constants.DB_FLG_FALSE);
+				//出勤時間をセット
+				tCompanyAttendance.setTrainingStartTime(dailyAttendanceForm.getTrainingStartTime());
+				//退勤時間をセット
+				tCompanyAttendance.setTrainingEndTime(dailyAttendanceForm.getTrainingEndTime());
+				
+				if (dailyAttendanceForm.getIsAbsent()) {
+					//欠席フラグが立っている場合
+					//勤怠状態に1(欠席)をセット
+					tCompanyAttendance.setStatus((short) 1);
+				} else {
+					//欠席フラグが立っていない場合
+					//開始時間と終了時間を基に、勤怠Ｕtilから勤怠状態を取得しセット
+					TrainingTime trainingStartTime = new TrainingTime(dailyAttendanceForm.getTrainingStartTime());
+					TrainingTime trainingEndTime = new TrainingTime(dailyAttendanceForm.getTrainingEndTime());
+					AttendanceStatusEnum attendanceStatusEnum = attendanceUtil.getStatus(trainingStartTime,
+							trainingEndTime);
+					tCompanyAttendance.setStatus(attendanceStatusEnum.code);
+				}
+				//最終更新者にログインユーザーのLMSIDをセット
+				tCompanyAttendance.setLastModifiedUser(loginUserDto.getLmsUserId());
+				//最終更新日に現在日付をセット
+				String date = dateUtil.toString(new Date());
+				try {
+					tCompanyAttendance.setLastModifiedDate(dateUtil.parse(date));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				//リストに追加
+				tCompanyAttendanceList.add(tCompanyAttendance);
+			} else {
+				//企業入力勤怠情報IDが設定されていない場合
+				//入力パラメータのLMSIDをセット
+				tCompanyAttendance.setLmsUserId(Integer.parseInt(dailyAttendanceForm.getLmsUserId()));
+				//日付を型変換(String→Date)してセット
+				Date trainingDate = null;
+				try {
+					trainingDate = dateUtil.parse(dailyAttendanceForm.getTrainingDate());
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				tCompanyAttendance.setTrainingDate(trainingDate);
+				//出勤時間をセット
+				tCompanyAttendance.setTrainingStartTime(dailyAttendanceForm.getTrainingStartTime());
+				//退勤時間をセット
+				tCompanyAttendance.setTrainingEndTime(dailyAttendanceForm.getTrainingEndTime());
+				if (dailyAttendanceForm.getIsAbsent()) {
+					//欠席フラグが立っている場合
+					//勤怠状態に1(欠席)をセット
+					tCompanyAttendance.setStatus((short) 1);
+				} else {
+					//欠席フラグが立っていない場合
+					//開始時間と終了時間を基に、勤怠Ｕtilから勤怠状態を取得しセット
+					TrainingTime trainingStartTime = new TrainingTime(dailyAttendanceForm.getTrainingStartTime());
+					TrainingTime trainingEndTime = new TrainingTime(dailyAttendanceForm.getTrainingEndTime());
+					AttendanceStatusEnum attendanceStatusEnum = attendanceUtil.getStatus(trainingStartTime,
+							trainingEndTime);
+					tCompanyAttendance.setStatus(attendanceStatusEnum.code);
+				}
+				//企業アカウントIDにログインユーザーの企業IDをセット
+				tCompanyAttendance.setAccountId(loginUserDto.getCompanyId());
+				//削除フラグ(OFF)をセット
+				tCompanyAttendance.setDeleteFlg(Constants.DB_FLG_FALSE);
+				//初回作成者にログインユーザーのLMSIDをセット
+				tCompanyAttendance.setFirstCreateUser(loginUserDto.getLmsUserId());
+				//初回作成日に現在日付をセット
+				String firstCreateDate = dateUtil.toString(new Date());
+				try {
+					tCompanyAttendance.setFirstCreateDate(dateUtil.parse(firstCreateDate));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				//最終更新者にログインユーザーのLMSIDをセット
+				tCompanyAttendance.setLastModifiedUser(loginUserDto.getLmsUserId());
+				//最終更新日に現在日付をセット
+				String lastModifiedDate = dateUtil.toString(new Date());
+				try {
+					tCompanyAttendance.setLastModifiedDate(dateUtil.parse(lastModifiedDate));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				//リストに追加
+				tCompanyAttendanceList.add(tCompanyAttendance);
+			}
+		}
+		
+		//上記で登録された勤怠情報（企業入力）リストから1件ずつ取り出す
+		for(TCompanyAttendance tCompanyAttendance : tCompanyAttendanceList) {
+			if(tCompanyAttendance.getCompanyAttendanceId() != null) {
+				//企業入力勤怠情報IDが設定されている場合
+				//更新処理
+				tCompanyAttendanceMapper.update(tCompanyAttendance);
+			} else {
+				//企業入力勤怠情報IDが設定されていない場合
+				//登録処理
+				tCompanyAttendanceMapper.insert(tCompanyAttendance);
+			}
+		}
+		//完了メッセージを返す
+		final String ATTENDANCE = "勤怠情報";
+		return messageUtil.getMessage(Constants.PROP_KEY_REGIST_COMPLETE, new String[] { ATTENDANCE });
 	}
 
 }
